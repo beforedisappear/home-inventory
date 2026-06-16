@@ -5,10 +5,8 @@ import { Job } from 'bullmq';
 import { Types } from 'mongoose';
 
 import { CategoryService } from '@/api/category/services/category.service';
-import {
-  AI_CLIENT,
-  type AiClient,
-} from '@/libs/ai/interfaces/ai-client.interface';
+import { AI_CLIENT } from '@/libs/ai/constants/di';
+import type { AiClient } from '@/libs/ai/interfaces/ai-client.interface';
 
 import { RECOGNITION_SYSTEM_PROMPT } from '../constants/recognition';
 import {

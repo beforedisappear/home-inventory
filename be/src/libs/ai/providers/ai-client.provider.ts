@@ -2,8 +2,9 @@ import { Logger, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { MockAiAdapter } from '../adapters/mock-ai.adapter';
+import { AI_CLIENT } from '../constants/di';
 import { openRouterFactory } from '../factories/openrouter.factory';
-import { AI_CLIENT, type AiClient } from '../interfaces/ai-client.interface';
+import { type AiClient } from '../interfaces/ai-client.interface';
 
 // Фабрика порта AiClient: по AI_PROVIDER подбирает адаптер.
 // Дефолт — mock (без ключей, для локалки/тестов).

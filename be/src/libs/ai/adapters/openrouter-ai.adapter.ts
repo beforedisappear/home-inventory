@@ -7,7 +7,7 @@ import type {
   AiCompleteInput,
 } from '../interfaces/ai-client.interface';
 
-export interface OpenRouterConfig {
+interface OpenRouterConfig {
   apiKey: string;
   baseURL: string;
   model: string;

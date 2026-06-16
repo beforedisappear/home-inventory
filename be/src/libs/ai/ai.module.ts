@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { AI_CLIENT } from './interfaces/ai-client.interface';
+import { AI_CLIENT } from './constants/di';
 import { AiClientProvider } from './providers/ai-client.provider';
 
 // Обёртка над AI-провайдером, экспортит порт AI_CLIENT

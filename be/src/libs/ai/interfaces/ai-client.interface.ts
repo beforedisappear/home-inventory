@@ -25,6 +25,3 @@ export interface AiClient {
   // возвращает сырой текст ответа модели (вызывающий парсит сам)
   complete(input: AiCompleteInput): Promise<string>;
 }
-
-// DI-токен для инъекции порта
-export const AI_CLIENT = 'AI_CLIENT';
