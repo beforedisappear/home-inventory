@@ -6,7 +6,7 @@
 
 **Architecture:** Each stack piece lands in its correct layer (import direction downward only): providers/router/styles in `app/`, the data+auth client and primitives in `shared/`. The HTTP client is owned by us (auth header + single-flight `401→refresh→retry`); only OpenAPI **types** are generated. Token persistence sits behind a `TokenStorage` interface so a native WebView adapter can swap in later.
 
-**Tech Stack:** React 19 + React Compiler, Vite 8, TypeScript 6 (bundler), Bun, Tailwind CSS v4 + HeroUI v3, TanStack Query/Router/Form, openapi-typescript + openapi-fetch + openapi-react-query, zod, Vitest + Testing Library.
+**Tech Stack:** React 19 + React Compiler, Vite 8, TypeScript 6 (bundler), Bun, Tailwind CSS v4 + HeroUI v3, TanStack Query/Router/Form, openapi-typescript + openapi-fetch + openapi-react-query, zod.
 
 ## Global Constraints
 
@@ -19,6 +19,7 @@
 - **Path alias** `@/*` → `src/*` is configured; use it for cross-layer imports.
 - **Commits:** Conventional Commits; do NOT add a `Co-Authored-By` trailer or any AI attribution.
 - API base origin for local dev: `http://localhost:3000`; backend routes are under `/api/v1` (global prefix `api` + URI version `1`).
+- **No test framework** — per the user's instruction, tests are NOT set up (no Vitest/Testing Library, no `*.test.*` files, no test scripts). The gate for every task is `bun run build` (`tsc -b && vite build`).
 
 ---
 
@@ -44,7 +45,7 @@ bun add @heroui/styles @heroui/react @tanstack/react-query @tanstack/react-route
 
 ```bash
 cd fe
-bun add -d tailwindcss @tailwindcss/vite openapi-typescript vitest jsdom @testing-library/react @testing-library/jest-dom
+bun add -d tailwindcss @tailwindcss/vite openapi-typescript
 ```
 
 - [ ] **Step 3: Add the Tailwind Vite plugin**
@@ -119,92 +120,21 @@ git commit -m "feat(fe): add stack deps and Tailwind v4 + HeroUI styling foundat
 
 ---
 
-### Task 2: Typed env config + `cn` helper + Vitest setup
+### Task 2: Typed env config + `cn` helper
 
 **Files:**
 - Create: `fe/src/shared/config/config.ts`
 - Create: `fe/src/shared/config/env.d.ts`
 - Create: `fe/src/shared/config/index.ts`
 - Create: `fe/src/shared/lib/cn.ts`
-- Create: `fe/src/shared/lib/cn.test.ts`
 - Create: `fe/src/shared/lib/index.ts`
 - Create: `fe/.env`, `fe/.env.example`
-- Create: `fe/vitest.config.ts`, `fe/vitest.setup.ts`
-- Modify: `fe/package.json` (test scripts)
 - Delete: `fe/src/shared/lib/.gitkeep`, `fe/src/shared/config/.gitkeep`
 
 **Interfaces:**
-- Produces: `appConfig: { apiUrl: string }` from `@/shared/config`; `cn(...inputs: ClassValue[]): string` from `@/shared/lib`; a working Vitest runner.
+- Produces: `appConfig: { apiUrl: string }` from `@/shared/config`; `cn(...inputs: ClassValue[]): string` from `@/shared/lib`.
 
-- [ ] **Step 1: Add Vitest config**
-
-Create `fe/vitest.config.ts`:
-
-```ts
-import { fileURLToPath, URL } from 'node:url'
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vitest/config'
-
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: ['./vitest.setup.ts'],
-  },
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
-  },
-})
-```
-
-Create `fe/vitest.setup.ts`:
-
-```ts
-import '@testing-library/jest-dom'
-```
-
-- [ ] **Step 2: Add test scripts**
-
-In `fe/package.json`, add to `scripts`:
-
-```json
-    "test": "vitest run",
-    "test:watch": "vitest"
-```
-
-- [ ] **Step 3: Write the failing `cn` test**
-
-Create `fe/src/shared/lib/cn.test.ts`:
-
-```ts
-import { describe, expect, it } from 'vitest'
-
-import { cn } from './cn'
-
-describe('cn', () => {
-  it('joins class names', () => {
-    expect(cn('p-2', 'text-sm')).toBe('p-2 text-sm')
-  })
-
-  it('resolves conflicting tailwind classes (last wins)', () => {
-    expect(cn('p-2', 'p-4')).toBe('p-4')
-  })
-
-  it('skips falsy values', () => {
-    expect(cn('p-2', false, null, undefined, 'm-1')).toBe('p-2 m-1')
-  })
-})
-```
-
-- [ ] **Step 4: Run the test to verify it fails**
-
-Run: `cd fe && bun run test cn`
-Expected: FAIL — cannot resolve `./cn`.
-
-- [ ] **Step 5: Implement `cn`**
+- [ ] **Step 1: Implement `cn`**
 
 Create `fe/src/shared/lib/cn.ts`:
 
@@ -223,12 +153,7 @@ Create `fe/src/shared/lib/index.ts`:
 export { cn } from './cn'
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
-
-Run: `cd fe && bun run test cn`
-Expected: PASS (3 tests).
-
-- [ ] **Step 7: Add typed env + config**
+- [ ] **Step 2: Add typed env + config**
 
 Create `fe/src/shared/config/env.d.ts`:
 
@@ -260,7 +185,7 @@ Create `fe/src/shared/config/index.ts`:
 export { appConfig } from './config'
 ```
 
-- [ ] **Step 8: Add env files**
+- [ ] **Step 3: Add env files**
 
 Create `fe/.env` and `fe/.env.example`, both with:
 
@@ -268,7 +193,7 @@ Create `fe/.env` and `fe/.env.example`, both with:
 VITE_API_URL=http://localhost:3000
 ```
 
-- [ ] **Step 9: Remove now-populated gitkeeps and verify build**
+- [ ] **Step 4: Remove now-populated gitkeeps and verify build**
 
 ```bash
 cd fe && git rm -q src/shared/lib/.gitkeep src/shared/config/.gitkeep
@@ -276,12 +201,12 @@ bun run build
 ```
 Expected: build green.
 
-- [ ] **Step 10: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-cd fe && git add -A src/shared/config src/shared/lib vitest.config.ts vitest.setup.ts package.json bun.lock .env.example
+cd fe && git add -A src/shared/config src/shared/lib .env.example
 git add .env 2>/dev/null || true
-git commit -m "feat(fe): add typed env config, cn helper, vitest setup"
+git commit -m "feat(fe): add typed env config and cn helper"
 ```
 
 Note: `.env` is gitignored by the Vite template; only `.env.example` is committed.
@@ -292,7 +217,6 @@ Note: `.env` is gitignored by the Vite template; only `.env.example` is committe
 
 **Files:**
 - Create: `fe/src/shared/auth/token-storage.ts`
-- Create: `fe/src/shared/auth/token-storage.test.ts`
 - Create: `fe/src/shared/auth/index.ts`
 
 **Interfaces:**
@@ -300,44 +224,7 @@ Note: `.env` is gitignored by the Vite template; only `.env.example` is committe
   - `interface TokenStorage { getAccess(): string | null; getRefresh(): string | null; setTokens(access: string, refresh: string): void; clear(): void }`
   - `tokenStorage: TokenStorage` (singleton, localStorage-backed) from `@/shared/auth`.
 
-- [ ] **Step 1: Write the failing test**
-
-Create `fe/src/shared/auth/token-storage.test.ts`:
-
-```ts
-import { beforeEach, describe, expect, it } from 'vitest'
-
-import { tokenStorage } from './token-storage'
-
-describe('tokenStorage (localStorage adapter)', () => {
-  beforeEach(() => localStorage.clear())
-
-  it('returns null when empty', () => {
-    expect(tokenStorage.getAccess()).toBeNull()
-    expect(tokenStorage.getRefresh()).toBeNull()
-  })
-
-  it('stores and reads a token pair', () => {
-    tokenStorage.setTokens('a1', 'r1')
-    expect(tokenStorage.getAccess()).toBe('a1')
-    expect(tokenStorage.getRefresh()).toBe('r1')
-  })
-
-  it('clear() removes both tokens', () => {
-    tokenStorage.setTokens('a1', 'r1')
-    tokenStorage.clear()
-    expect(tokenStorage.getAccess()).toBeNull()
-    expect(tokenStorage.getRefresh()).toBeNull()
-  })
-})
-```
-
-- [ ] **Step 2: Run the test to verify it fails**
-
-Run: `cd fe && bun run test token-storage`
-Expected: FAIL — cannot resolve `./token-storage`.
-
-- [ ] **Step 3: Implement the port + adapter**
+- [ ] **Step 1: Implement the port + adapter**
 
 Create `fe/src/shared/auth/token-storage.ts`:
 
@@ -376,12 +263,12 @@ export { tokenStorage } from './token-storage'
 export type { TokenStorage } from './token-storage'
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [ ] **Step 2: Verify build**
 
-Run: `cd fe && bun run test token-storage`
-Expected: PASS (3 tests).
+Run: `cd fe && bun run build`
+Expected: build green.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
 cd fe && git add src/shared/auth
@@ -437,7 +324,6 @@ git commit -m "feat(fe): generate OpenAPI types from backend spec"
 
 **Files:**
 - Create: `fe/src/shared/api/refresh.ts`
-- Create: `fe/src/shared/api/refresh.test.ts`
 - Create: `fe/src/shared/api/client.ts`
 - Create: `fe/src/shared/api/index.ts`
 
@@ -447,64 +333,7 @@ git commit -m "feat(fe): generate OpenAPI types from backend spec"
   - `refreshOnce(): Promise<boolean>` from `./refresh` (single-flight token refresh).
   - `apiClient` (openapi-fetch client) and `$api` (openapi-react-query) from `@/shared/api`.
 
-- [ ] **Step 1: Write the failing single-flight refresh test**
-
-Create `fe/src/shared/api/refresh.test.ts`:
-
-```ts
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { tokenStorage } from '@/shared/auth'
-
-import { refreshOnce } from './refresh'
-
-describe('refreshOnce (single-flight)', () => {
-  beforeEach(() => {
-    localStorage.clear()
-    tokenStorage.setTokens('old-a', 'old-r')
-  })
-  afterEach(() => vi.restoreAllMocks())
-
-  it('dedupes concurrent refreshes into one HTTP call and stores new tokens', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(
-        JSON.stringify({ accessToken: 'new-a', refreshToken: 'new-r' }),
-        { status: 200 },
-      ),
-    )
-    vi.stubGlobal('fetch', fetchMock)
-
-    const [a, b] = await Promise.all([refreshOnce(), refreshOnce()])
-
-    expect(a).toBe(true)
-    expect(b).toBe(true)
-    expect(fetchMock).toHaveBeenCalledTimes(1)
-    expect(tokenStorage.getAccess()).toBe('new-a')
-    expect(tokenStorage.getRefresh()).toBe('new-r')
-  })
-
-  it('returns false when there is no refresh token', async () => {
-    tokenStorage.clear()
-    const fetchMock = vi.fn()
-    vi.stubGlobal('fetch', fetchMock)
-
-    expect(await refreshOnce()).toBe(false)
-    expect(fetchMock).not.toHaveBeenCalled()
-  })
-
-  it('returns false when the refresh request fails', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 401 })))
-    expect(await refreshOnce()).toBe(false)
-  })
-})
-```
-
-- [ ] **Step 2: Run the test to verify it fails**
-
-Run: `cd fe && bun run test refresh`
-Expected: FAIL — cannot resolve `./refresh`.
-
-- [ ] **Step 3: Implement single-flight refresh**
+- [ ] **Step 1: Implement single-flight refresh**
 
 Create `fe/src/shared/api/refresh.ts`:
 
@@ -541,12 +370,7 @@ export function refreshOnce(): Promise<boolean> {
 
 If Task 4 Step 3 changed `VITE_API_URL` to include `/api/v1`, change the fetch URL here to `${appConfig.apiUrl}/auth/refresh`.
 
-- [ ] **Step 4: Run the test to verify it passes**
-
-Run: `cd fe && bun run test refresh`
-Expected: PASS (3 tests).
-
-- [ ] **Step 5: Implement the client with auth + retry middleware**
+- [ ] **Step 2: Implement the client with auth + retry middleware**
 
 Create `fe/src/shared/api/client.ts`:
 
@@ -602,15 +426,15 @@ Create `fe/src/shared/api/index.ts`:
 export { $api, apiClient } from './client'
 ```
 
-- [ ] **Step 6: Verify the full suite + build**
+- [ ] **Step 3: Verify build**
 
-Run: `cd fe && bun run test && bun run build`
-Expected: all tests pass; build green.
+Run: `cd fe && bun run build`
+Expected: build green.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-cd fe && git add src/shared/api/refresh.ts src/shared/api/refresh.test.ts src/shared/api/client.ts src/shared/api/index.ts
+cd fe && git add src/shared/api/refresh.ts src/shared/api/client.ts src/shared/api/index.ts
 git commit -m "feat(fe): add owned API client with single-flight 401 refresh"
 ```
 
@@ -851,15 +675,14 @@ git commit -m "feat(fe): add code-based router skeleton with layout and page pla
 
 ---
 
-### Task 8: Wire entry, smoke test, update CLAUDE.md
+### Task 8: Wire entry, update CLAUDE.md
 
 **Files:**
 - Modify: `fe/src/app/app.tsx`
-- Create: `fe/src/app/app.smoke.test.tsx`
 - Modify: `fe/CLAUDE.md`
 
 **Interfaces:**
-- Consumes: `AppProviders` (`@/app/providers`), `router` (`@/app/routes`), `HomePage` (`@/pages/home`).
+- Consumes: `AppProviders` (`@/app/providers`), `router` (`@/app/routes`).
 - Produces: the mounted application (providers wrapping `RouterProvider`).
 
 - [ ] **Step 1: Wire the entry**
@@ -885,35 +708,7 @@ createRoot(document.getElementById('root')!).render(
 )
 ```
 
-- [ ] **Step 2: Write the smoke test**
-
-Create `fe/src/app/app.smoke.test.tsx`:
-
-```tsx
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
-
-import { AppProviders } from '@/app/providers'
-import { HomePage } from '@/pages/home'
-
-describe('app smoke', () => {
-  it('renders the home page inside the providers', () => {
-    render(
-      <AppProviders>
-        <HomePage />
-      </AppProviders>,
-    )
-    expect(screen.getByRole('heading', { name: 'Home Inventory' })).toBeInTheDocument()
-  })
-})
-```
-
-- [ ] **Step 3: Run the smoke test**
-
-Run: `cd fe && bun run test app.smoke`
-Expected: PASS (1 test).
-
-- [ ] **Step 4: Update CLAUDE.md stack + conventions**
+- [ ] **Step 2: Update CLAUDE.md stack + conventions**
 
 In `fe/CLAUDE.md`, update the `## Stack` table to add rows and replace the "not chosen yet" paragraph with the resolved stack, then add a `## Data & API` section documenting:
 - Server state via TanStack Query; typed client in `shared/api` (`$api` from `openapi-react-query`); regenerate types with `bun run api:sync` (backend must be running).
@@ -924,16 +719,16 @@ In `fe/CLAUDE.md`, update the `## Stack` table to add rows and replace the "not 
 
 Also update the `app/app.tsx` bullet to: "application entry — mounts `AppProviders` wrapping `RouterProvider`; imports global styles. No separate `main.tsx`."
 
-- [ ] **Step 5: Final verification**
+- [ ] **Step 3: Final verification**
 
-Run: `cd fe && bun run test && bun run build`
-Expected: all tests pass; build green.
+Run: `cd fe && bun run build`
+Expected: build green.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-cd fe && git add src/app/app.tsx src/app/app.smoke.test.tsx CLAUDE.md
-git commit -m "feat(fe): wire providers + router entry, smoke test, update CLAUDE.md"
+cd fe && git add src/app/app.tsx CLAUDE.md
+git commit -m "feat(fe): wire providers + router entry, update CLAUDE.md"
 ```
 
 ---
@@ -948,6 +743,7 @@ git commit -m "feat(fe): wire providers + router entry, smoke test, update CLAUD
 - Styling/forms/config/codegen (spec §5) → Tasks 1 (Tailwind+HeroUI, safe-area), 2 (config), 4 (codegen). Forms = dependency + convention only (Task 1 install, Task 8 doc). ✓
 - Deliverables 1–10 (spec §6) → covered across Tasks 1–8; CLAUDE.md update = Task 8. ✓
 - Error handling (spec §7): Query defaults (Task 6), 401 middleware (Task 5). Router error boundary — deferred to first real layout work; placeholder shell has none. **Acceptable for infra scope; noted.**
+- Testing (spec §8): **dropped per user instruction** — no Vitest/Testing Library, no `*.test.*`, no smoke test. The per-task gate is `bun run build` (`tsc -b && vite build`). Behavioral verification (single-flight refresh, `cn`, TokenStorage) is deferred; types + build are the only safety net for now.
 
 **Placeholder scan:** No TBD/TODO; every code step has full code. The `VITE_API_URL` prefix branch in Task 4 is a concrete verify-and-set instruction, not a placeholder.
 
