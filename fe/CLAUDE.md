@@ -16,16 +16,21 @@ bun run preview    # preview production build
 
 ## Stack
 
-| Concern    | Choice                                            |
-| ---------- | ------------------------------------------------- |
-| UI         | React 19                                          |
-| Compiler   | React Compiler (`babel-plugin-react-compiler`)    |
-| Build      | Vite 8                                             |
-| Language   | TypeScript 6 (bundler resolution)                 |
-| Package mgr| Bun                                               |
-| Lint       | ESLint 10 flat config + typescript-eslint         |
+| Concern      | Choice                                                    |
+| ------------ | --------------------------------------------------------- |
+| UI           | React 19                                                  |
+| Compiler     | React Compiler (`babel-plugin-react-compiler`)            |
+| Build        | Vite 8                                                    |
+| Language     | TypeScript 6 (bundler resolution)                         |
+| Package mgr  | Bun                                                       |
+| Lint         | ESLint 10 flat config + typescript-eslint                 |
+| Styling      | Tailwind CSS v4 + HeroUI v3                               |
+| Server state | TanStack Query                                            |
+| Routing      | TanStack Router (code-based)                              |
+| Forms        | TanStack Form + zod                                       |
+| API types    | openapi-typescript (types) + openapi-fetch (owned client) |
 
-The app is fresh (Vite starter). Routing, server-state, and styling libraries are **not chosen yet** — add them deliberately and document them here when picked.
+The stack infrastructure is wired (providers, router skeleton, data/auth client, styling). Feature work builds on top of it. See **Data & API** below.
 
 ## Architecture — layered (stable dependencies)
 
@@ -38,20 +43,20 @@ app → pages → features → services → kernel → shared
 
 **The one rule that governs everything:** a layer may import only from layers **below** it. Lower layers never import upper layers. `app` may use everything; `shared` depends on nothing above it.
 
-| Layer        | Purpose                                                                                          | Same-layer cross-import |
-| ------------ | ------------------------------------------------------------------------------------------------ | ----------------------- |
+| Layer        | Purpose                                                                                              | Same-layer cross-import |
+| ------------ | ---------------------------------------------------------------------------------------------------- | ----------------------- |
 | **app**      | Entry point. Bootstrap, global config, wiring features into one app. Internal shape is app-specific. | n/a                     |
-| **pages**    | Composition layer — combines several features into a screen.                                     | ❌ forbidden            |
-| **features** | Main layer. Most code lives here. Each folder = one large independent piece of functionality.    | ❌ forbidden            |
-| **services** | Reusable business modules. May hold both logic and view.                                          | ❌ forbidden            |
-| **kernel**   | Connective business logic — knowledge of how the app is assembled.                               | ✅ allowed              |
-| **shared**   | App core, used everywhere: `ui` (ui-kit), `lib` (library extensions), config objects & constants. | ✅ allowed              |
+| **pages**    | Composition layer — combines several features into a screen.                                         | ❌ forbidden            |
+| **features** | Main layer. Most code lives here. Each folder = one large independent piece of functionality.        | ❌ forbidden            |
+| **services** | Reusable business modules. May hold both logic and view.                                             | ❌ forbidden            |
+| **kernel**   | Connective business logic — knowledge of how the app is assembled.                                   | ✅ allowed              |
+| **shared**   | App core, used everywhere: `ui` (ui-kit), `lib` (library extensions), config objects & constants.    | ✅ allowed              |
 
 ### `app/` internal structure
 
 `app` is not standardized across projects; for this one:
 
-- `app.tsx` — application entry: defines the root `App` component, mounts it to the DOM (`createRoot`), imports global styles. Referenced directly by `index.html` (`<script src="/src/app/app.tsx">`); there is no separate `main.tsx`.
+- `app.tsx` — application entry: mounts `AppProviders` wrapping `RouterProvider` to the DOM (`createRoot`), imports global styles. Referenced directly by `index.html` (`<script src="/src/app/app.tsx">`); there is no separate `main.tsx`.
 - `providers/` — components implementing global React providers
 - `routes/` — route config and router creation
 - `styles/` — global CSS
@@ -67,6 +72,16 @@ app → pages → features → services → kernel → shared
 ### Path alias
 
 `@/*` → `src/*`, configured in `tsconfig.app.json` (`paths`) and `vite.config.ts` (`resolve.alias`). Import across layers with `@/<layer>/...` — e.g. `@/shared/ui`, `@/features/items`, `@/app/app`.
+
+## Data & API
+
+- **Types:** generated from the backend OpenAPI spec into `shared/api/schema.ts`. Regenerate after API changes with `bun run api:sync` (backend must be running at `VITE_API_URL`, default `http://localhost:3000`). The committed `schema.ts` may be a placeholder until the first sync — run it once the backend is up.
+- **Client:** `apiClient` (`shared/api`) is our own `openapi-fetch` client, typed by `paths`. We own it so auth plumbing injects as middleware.
+- **Hooks:** built by hand via a factory over `apiClient` + TanStack Query (intentionally not `openapi-react-query`). `queryClient` lives in `shared/api`.
+- **Auth:** the client attaches the access token and runs a single-flight `401 → refresh → retry`; on refresh failure it clears tokens and redirects to `/login`. Tokens sit behind `TokenStorage` (`shared/auth`) — swap the localStorage adapter for a native bridge in the WebView build, in one place.
+- **Routing:** code-based tree in `app/routes`; screens live in `pages/`. Root route renders `app/layouts/RootLayout` around `<Outlet/>`.
+- **UI:** import HeroUI primitives via `@/shared/ui`, never `@heroui/react` directly — single ui-kit choke point.
+- **Forms:** TanStack Form + zod, co-located in the feature that owns the form.
 
 ## React & TypeScript conventions
 

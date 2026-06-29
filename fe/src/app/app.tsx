@@ -1,15 +1,26 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+/* eslint-disable react-refresh/only-export-components */
+import { StrictMode } from 'react';
 
-import "@/app/styles/index.css";
+import { RouterProvider } from '@tanstack/react-router';
+import { createRoot } from 'react-dom/client';
 
-// eslint-disable-next-line react-refresh/only-export-components
-function App() {
-  return <h1>Home Inventory</h1>;
+import { Providers } from './providers/providers';
+import { router } from './routes/router';
+import './styles/index.css';
+
+/*
+ * app entry point
+ */
+function App () {
+  return (
+     <Providers>
+        <RouterProvider router={router} />
+      </Providers>
+  );
 }
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <App/>
   </StrictMode>,
 );
