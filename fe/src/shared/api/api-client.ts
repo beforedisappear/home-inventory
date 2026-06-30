@@ -32,6 +32,10 @@ const authMiddleware: Middleware = {
     if (!refreshed) {
       tokenStorage.clear();
 
+      if (window.location.pathname !== '/login') {
+        window.location.assign('/login');
+      }
+
       return response;
     }
 

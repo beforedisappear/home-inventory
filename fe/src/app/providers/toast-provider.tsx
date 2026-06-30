@@ -9,5 +9,10 @@ interface Props {
 export function ToastProvider(props: Props) {
   const { children } = props;
 
-  return <Toast.Provider placement="top">{children}</Toast.Provider>;
+  return (
+    <>
+      <Toast.Provider placement='top' />
+      {children}
+    </>
+  );
 }
