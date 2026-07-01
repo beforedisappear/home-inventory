@@ -8,7 +8,10 @@ export {
   TextField,
   Toast,
   toast,
+  Typography,
 } from '@heroui/react';
 
+export { Brand } from './brand';
 export { FormOtpField } from './form-otp-field';
 export { FormTextField } from './form-text-field';
+export { ThemeToggle } from './theme-toggle';

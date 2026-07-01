@@ -25,7 +25,7 @@ export function useLoginForm() {
   // одна форма на оба шага: email хранится в стейте формы, ветвимся по step
   const form = useForm({
     defaultValues: { email: '', code: '' },
-    validators: { onChange: step === 'email' ? emailSchema : authSchema },
+    validators: { onSubmit: step === 'email' ? emailSchema : authSchema },
     onSubmit: async ({ value }) => {
       if (step === 'email') {
         try {

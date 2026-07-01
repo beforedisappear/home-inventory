@@ -12,8 +12,7 @@ interface FormTextFieldProps {
 export function FormTextField(props: FormTextFieldProps) {
   const { field, label, type = 'text' } = props;
 
-  const showError =
-    field.state.meta.isTouched && field.state.meta.errors.length > 0;
+  const showError = field.state.meta.errors.length > 0;
 
   return (
     <TextField

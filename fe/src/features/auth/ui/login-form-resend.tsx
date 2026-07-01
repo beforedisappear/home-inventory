@@ -43,7 +43,9 @@ export function LoginFormResend(props: ResendCodeProps) {
     <Button
       type='button'
       isDisabled={left > 0 || isPending}
+      variant='ghost'
       onPress={handleResend}
+      className='w-full'
     >
       {left > 0
         ? `Отправить код повторно через ${left}с`

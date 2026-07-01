@@ -14,15 +14,13 @@ interface FormOtpFieldProps {
   onComplete?: () => void;
 }
 
-// связывает поле TanStack Form с OTP-вводом HeroUI (по цифре на слот)
 export function FormOtpField(props: FormOtpFieldProps) {
   const { field, label, length, onComplete } = props;
 
-  const showError =
-    field.state.meta.isTouched && field.state.meta.errors.length > 0;
+  const showError = field.state.meta.errors.length > 0;
 
   return (
-    <div className='flex flex-col gap-1'>
+    <div className='flex flex-col items-center gap-1'>
       <Label>{label}</Label>
 
       <InputOTP

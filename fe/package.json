@@ -14,6 +14,7 @@
     "api:sync": "bun run api:fetch && bun run api:gen"
   },
   "dependencies": {
+    "@fontsource-variable/instrument-sans": "^5.2.8",
     "@heroui/react": "^3.2.1",
     "@heroui/styles": "^3.2.1",
     "@tanstack/react-form": "^1.33.0",
@@ -21,6 +22,7 @@
     "@tanstack/react-router": "^1.170.16",
     "@tanstack/react-router-devtools": "^1.167.0",
     "clsx": "^2.1.1",
+    "lucide-react": "^1.22.0",
     "openapi-fetch": "^0.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

@@ -9,6 +9,7 @@ import { env } from '@/shared/config/env';
 
 import { Providers } from './providers/providers';
 import { router } from './routes/router';
+import '@fontsource-variable/instrument-sans/index.css';
 import './styles/index.css';
 
 /*

@@ -1,12 +1,14 @@
 import { LoginForm } from '@/features/auth';
 
+import { ThemeToggle } from '@/shared/ui';
+
 export function LoginPage() {
   return (
-    <div className='flex min-h-svh items-center justify-center p-4'>
-      <div className='w-full max-w-sm'>
-        <h1 className='mb-6 text-center text-2xl font-bold'>Вход</h1>
-        <LoginForm />
+    <div className='relative flex min-h-svh items-center justify-center p-4'>
+      <div className='absolute right-4 top-4'>
+        <ThemeToggle />
       </div>
+      <LoginForm />
     </div>
   );
 }
