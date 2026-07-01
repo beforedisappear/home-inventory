@@ -4,6 +4,7 @@ import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 
+import { ROUTES } from '@/kernel/routes';
 import { sessionQueries } from '@/services/session';
 
 import { toast } from '@/shared/ui';
@@ -44,7 +45,7 @@ export function useLoginForm() {
           email: value.email,
           code: value.code,
         });
-        void navigate({ to: '/' });
+        void navigate({ to: ROUTES.HOME });
       } catch {
         toast.danger('Неверный код');
       }

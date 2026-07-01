@@ -8,6 +8,8 @@ import {
 import { HomePage } from '@/pages/home';
 import { LoginPage } from '@/pages/login';
 
+import { ROUTES } from '@/kernel/routes';
+
 import { tokenStorage } from '@/shared/api/token-storage';
 
 import { RootLayout } from '../layouts/root-layout';
@@ -19,35 +21,39 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export const rootRoute = createRootRoute({
-  component: RootLayout,
-});
+const rootRoute = createRootRoute({ component: RootLayout });
 
 const protectedRoute = createRoute({
   id: 'protected',
   getParentRoute: () => rootRoute,
   beforeLoad: () => {
     if (!tokenStorage.getAccess()) {
-      throw redirect({ to: '/login' });
+      throw redirect({ to: ROUTES.LOGIN });
     }
   },
 });
 
 const indexRoute = createRoute({
   getParentRoute: () => protectedRoute,
-  path: '/',
+  path: ROUTES.HOME,
   component: HomePage,
 });
 
-const loginRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/login',
-  component: LoginPage,
-});
+const protectedRoutes = protectedRoute.addChildren([indexRoute]);
 
-const routeTree = rootRoute.addChildren([
-  protectedRoute.addChildren([indexRoute]),
-  loginRoute,
-]);
+const publicRoutes = [
+  createRoute({
+    getParentRoute: () => rootRoute,
+    path: ROUTES.LOGIN,
+    component: LoginPage,
+    beforeLoad: () => {
+      if (tokenStorage.getAccess()) {
+        throw redirect({ to: ROUTES.HOME });
+      }
+    },
+  }),
+];
+
+const routeTree = rootRoute.addChildren([protectedRoutes, ...publicRoutes]);
 
 export const router = createRouter({ routeTree });
