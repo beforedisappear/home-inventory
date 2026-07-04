@@ -7,11 +7,13 @@ import {
 
 import { HomePage } from '@/pages/home';
 import { LoginPage } from '@/pages/login';
+import { UserProfilePage } from '@/pages/user-profile';
 
 import { ROUTES } from '@/kernel/routes';
 
 import { tokenStorage } from '@/shared/api/token-storage';
 
+import { ProtectedLayout } from '../layouts/protected-layout';
 import { RootLayout } from '../layouts/root-layout';
 
 // Регистрируем типы (чтобы роутер работал с TS без костылей)
@@ -26,6 +28,7 @@ const rootRoute = createRootRoute({ component: RootLayout });
 const protectedRoute = createRoute({
   id: 'protected',
   getParentRoute: () => rootRoute,
+  component: ProtectedLayout,
   beforeLoad: () => {
     if (!tokenStorage.getAccess()) {
       throw redirect({ to: ROUTES.LOGIN });
@@ -39,7 +42,13 @@ const indexRoute = createRoute({
   component: HomePage,
 });
 
-const protectedRoutes = protectedRoute.addChildren([indexRoute]);
+const profileRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: ROUTES.PROFILE,
+  component: UserProfilePage,
+});
+
+const protectedRoutes = protectedRoute.addChildren([indexRoute, profileRoute]);
 
 const publicRoutes = [
   createRoute({
