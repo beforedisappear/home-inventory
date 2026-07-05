@@ -5,29 +5,27 @@ import { ROUTES } from '@/kernel/routes';
 
 import { Dropdown } from '@/shared/ui';
 
-type MenuAction = 'profile' | 'logout';
-
 interface Props {
   isLoggingOut: boolean;
   onLogout: () => void;
 }
 
-// сюда добавляются остальные кнопки хедера на мобильных экранах
 export function HeaderMobileContent(props: Props) {
   const navigate = useNavigate();
 
-  const actioByKey: Record<MenuAction, () => void> = {
-    profile: () => void navigate({ to: ROUTES.PROFILE }),
-    logout: () => props.onLogout(),
-  };
-
-  const handleAction = (key: MenuAction) => {
-    const action = actioByKey[key];
-
-    if (!action) return;
-
-    action();
-  };
+  const actions = [
+    {
+      id: 'profile',
+      label: 'Профиль',
+      onAction: () => void navigate({ to: ROUTES.PROFILE }),
+    },
+    {
+      id: 'logout',
+      label: 'Выйти',
+      onAction: props.onLogout,
+      isDisabled: props.isLoggingOut,
+    },
+  ];
 
   return (
     <div className='sm:hidden'>
@@ -43,11 +41,17 @@ export function HeaderMobileContent(props: Props) {
         </Dropdown.Trigger>
 
         <Dropdown.Popover>
-          <Dropdown.Menu onAction={key => handleAction(key as MenuAction)}>
-            <Dropdown.Item id='profile'>Профиль</Dropdown.Item>
-            <Dropdown.Item id='logout' isDisabled={props.isLoggingOut}>
-              Выйти
-            </Dropdown.Item>
+          <Dropdown.Menu>
+            {actions.map(action => (
+              <Dropdown.Item
+                key={action.id}
+                id={action.id}
+                onAction={action.onAction}
+                isDisabled={action.isDisabled}
+              >
+                {action.label}
+              </Dropdown.Item>
+            ))}
           </Dropdown.Menu>
         </Dropdown.Popover>
       </Dropdown.Root>
