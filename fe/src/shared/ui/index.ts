@@ -1,6 +1,7 @@
 // единая точка ui-kit: фичи берут компоненты отсюда, не из @heroui/react напрямую
 export {
   Button,
+  Dropdown,
   ErrorMessage,
   Input,
   Label,
