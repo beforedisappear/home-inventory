@@ -5,6 +5,7 @@ import {
   redirect,
 } from '@tanstack/react-router';
 
+import { ContainerByIdPage } from '@/pages/container-by-id';
 import { HomePage } from '@/pages/home';
 import { LoginPage } from '@/pages/login';
 import { UserProfilePage } from '@/pages/user-profile';
@@ -48,7 +49,17 @@ const profileRoute = createRoute({
   component: UserProfilePage,
 });
 
-const protectedRoutes = protectedRoute.addChildren([indexRoute, profileRoute]);
+const containerByIdRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: ROUTES.CONTAINER_BY_ID,
+  component: ContainerByIdPage,
+});
+
+const protectedRoutes = protectedRoute.addChildren([
+  indexRoute,
+  profileRoute,
+  containerByIdRoute,
+]);
 
 const publicRoutes = [
   createRoute({

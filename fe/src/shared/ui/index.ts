@@ -1,6 +1,7 @@
 // единая точка ui-kit: фичи берут компоненты отсюда, не из @heroui/react напрямую
 export {
   Button,
+  Chip,
   Dropdown,
   ErrorMessage,
   Input,
@@ -10,6 +11,7 @@ export {
   Spinner,
   TextField,
   Toast,
+  Tooltip,
   Typography,
   toast,
   useOverlayState,
@@ -17,6 +19,7 @@ export {
 } from '@heroui/react';
 
 export { Brand } from './brand';
+export { EmptyState } from './empty-state';
 export { FormOtpField } from './form-otp-field';
 export { FormTextField } from './form-text-field';
 export { ThemeToggle } from './theme-toggle';
