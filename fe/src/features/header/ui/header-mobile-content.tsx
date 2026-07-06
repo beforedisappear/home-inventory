@@ -30,14 +30,11 @@ export function HeaderMobileContent(props: Props) {
   return (
     <div className='sm:hidden'>
       <Dropdown.Root>
-        <Dropdown.Trigger>
-          <button
-            type='button'
-            aria-label='Меню'
-            className='flex size-9 items-center justify-center rounded-lg border border-border bg-surface text-foreground transition-colors hover:bg-surface-secondary'
-          >
-            <MenuIcon size={18} />
-          </button>
+        <Dropdown.Trigger
+          aria-label='Меню'
+          className='flex size-9 items-center justify-center rounded-lg border border-border bg-surface text-foreground transition-colors hover:bg-surface-secondary'
+        >
+          <MenuIcon size={18} />
         </Dropdown.Trigger>
 
         <Dropdown.Popover>

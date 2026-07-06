@@ -4,11 +4,11 @@ import { ChevronLeft } from 'lucide-react';
 
 import { containerQueries } from '@/services/container';
 
+import { getContainerKindLabel } from '@/kernel/container/kind-label';
 import { ROUTES } from '@/kernel/routes';
 
-import { Chip, ErrorMessage, Skeleton, Typography } from '@/shared/ui';
+import { Chip, ErrorState, Skeleton, Typography } from '@/shared/ui';
 
-import { getContainerKindLabel } from '../model/container-kind-label';
 import { ContainerName } from './container-name';
 
 interface Props {
@@ -20,6 +20,7 @@ export function ContainerHeader({ parentId }: Props) {
     data: container,
     isPending,
     isError,
+    refetch,
   } = useQuery(containerQueries.byId(parentId));
 
   const { data: parent } = useQuery({
@@ -39,8 +40,11 @@ export function ContainerHeader({ parentId }: Props) {
   if (isError || !container) {
     return (
       <div className='flex flex-col gap-2 border-b border-border pb-4'>
-        <ErrorMessage>Не удалось загрузить контейнер</ErrorMessage>
-        <Link to={ROUTES.HOME}>
+        <ErrorState onRetry={() => refetch()}>
+          Не удалось загрузить контейнер
+        </ErrorState>
+        <Link to={ROUTES.HOME} className='inline-flex w-fit items-center gap-1'>
+          <ChevronLeft size={16} />
           <Typography type='body-sm' color='muted'>
             На главную
           </Typography>
