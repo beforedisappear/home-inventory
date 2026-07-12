@@ -6,6 +6,7 @@ export class ContainerRuleMapper {
     return {
       id: doc._id.toString(),
       name: doc.name,
+      isSystem: doc.ownerId === null,
       // Mongoose subdoc-array — копируем чистыми объектами, без internal-полей
       kindRules: doc.kindRules.map((kr) => ({
         kind: kr.kind,

@@ -1,4 +1,10 @@
-import { IsArray, IsDate, IsMongoId, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsMongoId,
+  IsString,
+} from 'class-validator';
 
 import { KindRuleDto } from './kind-rule.dto';
 
@@ -8,6 +14,9 @@ export class ContainerRuleResponseDto {
 
   @IsString()
   name: string;
+
+  @IsBoolean()
+  isSystem: boolean;
 
   @IsArray()
   kindRules: KindRuleDto[];
