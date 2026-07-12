@@ -1,19 +1,25 @@
+import type { ReactNode } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { ChevronRight, PackageOpen } from 'lucide-react';
+import { PackageOpen } from 'lucide-react';
 
 import { containerQueries } from '@/services/container';
 
+import type { components } from '@/kernel/api/schema';
 import { getContainerKindIcon } from '@/kernel/container/kind-icon';
 import { ROUTES } from '@/kernel/routes';
 
 import { EmptyState, ErrorState, Spinner, Typography } from '@/shared/ui';
 
+type ContainerResponseDto = components['schemas']['ContainerResponseDto'];
+
 interface Props {
   parentId: string | null;
+  renderItemActions?: (child: ContainerResponseDto) => ReactNode;
 }
 
-export function ContainerList({ parentId }: Props) {
+export function ContainerList({ parentId, renderItemActions }: Props) {
   const { data, isPending, isError, refetch } = useQuery(
     containerQueries.children(parentId),
   );
@@ -44,18 +50,22 @@ export function ContainerList({ parentId }: Props) {
         const Icon = getContainerKindIcon(child.kind);
 
         return (
-          <li key={child.id}>
+          <li
+            key={child.id}
+            className='flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-surface-secondary'
+          >
             <Link
               to={ROUTES.CONTAINER_BY_ID}
               params={{ id: child.id }}
-              className='flex items-center justify-between gap-3 rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-surface-secondary'
+              className='flex min-w-0 flex-1 items-center gap-3'
             >
               <span className='flex min-w-0 items-center gap-3'>
                 <Icon size={18} className='shrink-0 text-muted' />
                 <Typography truncate>{child.name}</Typography>
               </span>
-              <ChevronRight size={16} className='shrink-0 text-muted' />
             </Link>
+
+            {renderItemActions?.(child)}
           </li>
         );
       })}

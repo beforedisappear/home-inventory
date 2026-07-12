@@ -1,9 +1,12 @@
+import type { ReactNode } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
 
 import { containerQueries } from '@/services/container';
 
+import type { components } from '@/kernel/api/schema';
 import { getContainerKindLabel } from '@/kernel/container/kind-label';
 import { ROUTES } from '@/kernel/routes';
 
@@ -11,11 +14,14 @@ import { Chip, ErrorState, Skeleton, Typography } from '@/shared/ui';
 
 import { ContainerName } from './container-name';
 
+type ContainerResponseDto = components['schemas']['ContainerResponseDto'];
+
 interface Props {
   parentId: string;
+  actions?: (container: ContainerResponseDto) => ReactNode;
 }
 
-export function ContainerHeader({ parentId }: Props) {
+export function ContainerHeader({ parentId, actions }: Props) {
   const {
     data: container,
     isPending,
@@ -79,7 +85,11 @@ export function ContainerHeader({ parentId }: Props) {
 
       <div className='flex items-center justify-between gap-2'>
         <ContainerName name={container.name} />
-        {kindLabel && <Chip size='sm'>{kindLabel}</Chip>}
+
+        <div className='flex shrink-0 items-center gap-2'>
+          {kindLabel && <Chip size='sm'>{kindLabel}</Chip>}
+          {actions?.(container)}
+        </div>
       </div>
     </div>
   );
