@@ -5,3 +5,6 @@ export const buildContainerByIdKey = (id: string) => ['container', id] as const;
 
 export const buildContainerRuleByIdKey = (id: string) =>
   ['container-rule', id] as const;
+
+export const buildContainerRuleListKey = () =>
+  ['container-rule', 'list'] as const;
