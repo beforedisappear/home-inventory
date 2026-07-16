@@ -12,16 +12,17 @@ import { getAllowedKinds } from './get-allowed-kinds';
 import { createContainerSchema } from './schemas';
 
 type CreateContainerDto = components['schemas']['CreateContainerDto'];
+type ContainerRuleResponseDto =
+  components['schemas']['ContainerRuleResponseDto'];
 
 interface UseCreateContainerFormProps {
   parentId: string | null;
   onSuccess: () => void;
+  rootRules: ContainerRuleResponseDto[] | undefined;
 }
 
-// root (parentId === null) — только имя. child — имя + kind, список kind сужен
-// по правилу родителя (см. get-allowed-kinds.ts)
 export function useCreateContainerForm(props: UseCreateContainerFormProps) {
-  const { parentId, onSuccess } = props;
+  const { parentId, onSuccess, rootRules } = props;
 
   const { data: parent } = useQuery({
     ...containerQueries.byId(parentId ?? ''),
@@ -41,8 +42,10 @@ export function useCreateContainerForm(props: UseCreateContainerFormProps) {
     containerQueries.create(),
   );
 
+  const systemRuleId = rootRules?.find(r => r.isSystem)?.id ?? '';
+
   const form = useForm({
-    defaultValues: { name: '', kind: '' },
+    defaultValues: { name: '', kind: '', ruleId: systemRuleId },
     validators: { onSubmit: createContainerSchema },
     onSubmit: async ({ value }) => {
       try {
@@ -52,6 +55,7 @@ export function useCreateContainerForm(props: UseCreateContainerFormProps) {
           kind: parentId
             ? (value.kind as CreateContainerDto['kind'])
             : undefined,
+          ruleId: parentId === null ? value.ruleId || undefined : undefined,
         });
         toast.success('Контейнер создан');
         onSuccess();

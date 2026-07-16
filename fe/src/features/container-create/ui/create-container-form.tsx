@@ -1,4 +1,8 @@
+import type { ReactNode } from 'react';
+
 import { getContainerKindLabel } from '@/kernel/container/kind-label';
+
+import type { components } from '@/kernel/api/schema';
 
 import {
   Button,
@@ -11,15 +15,29 @@ import {
 
 import { useCreateContainerForm } from '../model/use-create-container-form';
 
+type ContainerRuleResponseDto =
+  components['schemas']['ContainerRuleResponseDto'];
+
 interface Props {
   parentId: string | null;
   onSuccess: () => void;
+  onRequestClose: () => void;
+  rules: ContainerRuleResponseDto[] | undefined;
+  renderRuleField?: (props: {
+    value: string;
+    onChange: (ruleId: string) => void;
+    onRequestClose: () => void;
+  }) => ReactNode;
 }
 
-export function CreateContainerForm({ parentId, onSuccess }: Props) {
+export function CreateContainerForm(props: Props) {
+  const { parentId, onSuccess, onRequestClose, rules, renderRuleField } =
+    props;
+
   const { form, allowedKinds } = useCreateContainerForm({
     parentId,
     onSuccess,
+    rootRules: rules,
   });
 
   const isDeadEnd = parentId !== null && allowedKinds.length === 0;
@@ -37,12 +55,24 @@ export function CreateContainerForm({ parentId, onSuccess }: Props) {
         {field => <FormTextField field={field} label='Название' />}
       </form.Field>
 
+      {parentId === null && renderRuleField && (
+        <form.Field name='ruleId'>
+          {field =>
+            renderRuleField({
+              value: field.state.value,
+              onChange: field.handleChange,
+              onRequestClose,
+            })
+          }
+        </form.Field>
+      )}
+
       {parentId !== null && !isDeadEnd && (
         <form.Field name='kind'>
           {field => (
             <Select.Root
-              selectedKey={field.state.value || null}
-              onSelectionChange={key => field.handleChange(String(key))}
+              value={field.state.value || null}
+              onChange={key => field.handleChange(String(key))}
               placeholder='Выберите тип'
               className='flex flex-col gap-1'
             >

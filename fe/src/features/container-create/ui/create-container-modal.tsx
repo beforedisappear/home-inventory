@@ -1,5 +1,5 @@
 import type { UseOverlayStateReturn } from '@/shared/ui';
-import { Modal } from '@/shared/ui';
+import { AdaptiveModal } from '@/shared/ui';
 
 interface Props {
   children: React.ReactNode;
@@ -10,19 +10,12 @@ export function CreateContainerModal(props: Props) {
   const { state, children } = props;
 
   return (
-    <Modal.Root state={state}>
-      <Modal.Backdrop>
-        <Modal.Container>
-          <Modal.Dialog className='min-h-57.5'>
-            <Modal.Header>
-              <Modal.Heading>Новый контейнер</Modal.Heading>
-              <Modal.CloseTrigger />
-            </Modal.Header>
-
-            {children}
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
-    </Modal.Root>
+    <AdaptiveModal
+      state={state}
+      heading='Новый контейнер'
+      className='min-h-57.5'
+    >
+      {children}
+    </AdaptiveModal>
   );
 }

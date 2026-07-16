@@ -1,16 +1,34 @@
+import type { ReactNode } from 'react';
+
 import { Plus } from 'lucide-react';
 
-import { Button, useOverlayState } from '@/shared/ui';
+import { useQuery } from '@tanstack/react-query';
+
+import { containerRuleQueries } from '@/services/container-rule';
+
+import { Button, Spinner, useOverlayState } from '@/shared/ui';
 
 import { CreateContainerForm } from './create-container-form';
 import { CreateContainerModal } from './create-container-modal';
 
 interface Props {
   parentId: string | null;
+  renderRuleField?: (props: {
+    value: string;
+    onChange: (ruleId: string) => void;
+    onRequestClose: () => void;
+  }) => ReactNode;
 }
 
-export function CreateContainer({ parentId }: Props) {
+export function CreateContainer({ parentId, renderRuleField }: Props) {
   const state = useOverlayState();
+
+  // список правил нужен только для root-контейнера (submit-дефолт в
+  // use-create-container-form.ts); дальше по дереву прокидывается пропсом
+  const { data: rules, isLoading: isRulesLoading } = useQuery({
+    ...containerRuleQueries.list(),
+    enabled: parentId === null,
+  });
 
   return (
     <>
@@ -25,7 +43,17 @@ export function CreateContainer({ parentId }: Props) {
       </Button>
 
       <CreateContainerModal state={state}>
-        <CreateContainerForm parentId={parentId} onSuccess={state.close} />
+        {parentId === null && isRulesLoading ? (
+          <Spinner className='m-auto' />
+        ) : (
+          <CreateContainerForm
+            parentId={parentId}
+            onSuccess={state.close}
+            onRequestClose={state.close}
+            rules={rules}
+            renderRuleField={renderRuleField}
+          />
+        )}
       </CreateContainerModal>
     </>
   );

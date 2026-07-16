@@ -4,6 +4,10 @@ import {
   ContainerDeleteTrigger,
 } from '@/features/container-delete';
 import { ContainerList } from '@/features/container-list';
+import {
+  ContainerRuleField,
+  CreateRuleDialog,
+} from '@/features/container-rule';
 
 import { Typography } from '@/shared/ui';
 
@@ -13,7 +17,10 @@ export function HomePage() {
       <div className='flex w-full max-w-2xl flex-1 flex-col gap-6'>
         <div className='flex items-center justify-between gap-2 border-b border-border pb-4'>
           <Typography.Heading level={2}>Мои контейнеры</Typography.Heading>
-          <CreateContainer parentId={null} />
+          <CreateContainer
+            parentId={null}
+            renderRuleField={props => <ContainerRuleField {...props} />}
+          />
         </div>
 
         <ContainerList
@@ -29,6 +36,7 @@ export function HomePage() {
       </div>
 
       <ContainerDeleteDialog />
+      <CreateRuleDialog />
     </div>
   );
 }
