@@ -1,8 +1,8 @@
 import {
+  AdaptiveModal,
   Button,
   FormOtpField,
   FormTextField,
-  Modal,
   Spinner,
 } from '@/shared/ui';
 
@@ -27,7 +27,7 @@ export function UserEmailChangeForm(props: UserEmailChangeFormProps) {
         void form.handleSubmit();
       }}
     >
-      <Modal.Body className='flex flex-col gap-4'>
+      <AdaptiveModal.Body className='flex flex-col gap-4'>
         {step === 'email' ? (
           <form.Field name='newEmail'>
             {field => (
@@ -46,9 +46,9 @@ export function UserEmailChangeForm(props: UserEmailChangeFormProps) {
             )}
           </form.Field>
         )}
-      </Modal.Body>
+      </AdaptiveModal.Body>
 
-      <Modal.Footer className='mt-auto'>
+      <AdaptiveModal.Footer className='mt-auto'>
         <form.Subscribe
           selector={s => ({
             canSubmit: s.canSubmit,
@@ -67,7 +67,7 @@ export function UserEmailChangeForm(props: UserEmailChangeFormProps) {
             </Button>
           )}
         </form.Subscribe>
-      </Modal.Footer>
+      </AdaptiveModal.Footer>
     </form>
   );
 }
