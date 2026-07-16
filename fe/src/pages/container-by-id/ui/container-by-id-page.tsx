@@ -6,6 +6,7 @@ import {
   ContainerDeleteDialog,
   ContainerDeleteTrigger,
 } from '@/features/container-delete';
+import { ContainerEdit } from '@/features/container-edit';
 import { ContainerList } from '@/features/container-list';
 
 import { ROUTES } from '@/kernel/routes';
@@ -32,6 +33,11 @@ export function ContainerByIdPage() {
 
             return (
               <>
+                <ContainerEdit
+                  containerId={container.id}
+                  parentId={container.parentId}
+                  name={container.name}
+                />
                 <CreateContainer parentId={container.id} />
                 <ContainerDeleteTrigger
                   containerId={container.id}
