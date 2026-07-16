@@ -11,6 +11,7 @@ import { createContainerRequest } from './create';
 import { deleteContainerRequest } from './delete';
 import { findContainerByIdRequest } from './find-by-id';
 import { findChildrenRequest } from './find-children';
+import { updateContainerRequest } from './update';
 
 export const containerQueries = {
   children: (parentId: string | null) =>
@@ -44,6 +45,20 @@ export const containerQueries = {
           queryKey: buildContainerChildrenKey(vars.parentId),
         });
         queryClient.removeQueries({ queryKey: buildContainerByIdKey(vars.id) });
+      },
+    }),
+
+  update: () =>
+    mutationOptions({
+      mutationFn: (vars: { id: string; parentId: string | null; name: string }) =>
+        updateContainerRequest(vars.id, { name: vars.name }),
+      onSuccess: (_data, vars) => {
+        queryClient.invalidateQueries({
+          queryKey: buildContainerByIdKey(vars.id),
+        });
+        queryClient.invalidateQueries({
+          queryKey: buildContainerChildrenKey(vars.parentId),
+        });
       },
     }),
 };
