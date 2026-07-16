@@ -2,7 +2,9 @@
 export {
   AlertDialog,
   Button,
+  Checkbox,
   Chip,
+  Drawer,
   Dropdown,
   ErrorMessage,
   Input,
@@ -21,6 +23,8 @@ export {
   type UseOverlayStateReturn,
 } from '@heroui/react';
 
+export { AdaptiveDrawer } from './adaptive-drawer';
+export { AdaptiveModal } from './adaptive-modal';
 export { Brand } from './brand';
 export { EmptyState } from './empty-state';
 export { ErrorState } from './error-state';
