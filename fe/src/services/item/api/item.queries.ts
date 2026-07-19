@@ -1,12 +1,13 @@
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 
-import { buildItemsByContainerKey } from '@/kernel/item/keys';
+import { buildItemByIdKey, buildItemsByContainerKey } from '@/kernel/item/keys';
 
 import type { components } from '@/kernel/api/schema';
 import { queryClient } from '@/shared/api/query-client';
 
 import { createItemRequest } from './create';
 import { deleteItemRequest } from './delete';
+import { findItemByIdRequest } from './find-by-id';
 import { findItemsByContainerRequest } from './find-by-container';
 import { updateItemRequest } from './update';
 
@@ -17,6 +18,12 @@ export const itemQueries = {
     queryOptions({
       queryKey: buildItemsByContainerKey(containerId),
       queryFn: () => findItemsByContainerRequest(containerId),
+    }),
+
+  byId: (id: string) =>
+    queryOptions({
+      queryKey: buildItemByIdKey(id),
+      queryFn: () => findItemByIdRequest(id),
     }),
 
   create: () =>
@@ -39,6 +46,9 @@ export const itemQueries = {
       onSuccess: (_data, vars) => {
         queryClient.invalidateQueries({
           queryKey: buildItemsByContainerKey(vars.containerId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: buildItemByIdKey(vars.id),
         });
       },
     }),
