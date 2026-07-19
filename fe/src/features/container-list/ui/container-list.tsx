@@ -17,9 +17,12 @@ type ContainerResponseDto = components['schemas']['ContainerResponseDto'];
 interface Props {
   parentId: string | null;
   renderItemActions?: (child: ContainerResponseDto) => ReactNode;
+  children?: ReactNode;
 }
 
-export function ContainerList({ parentId, renderItemActions }: Props) {
+export function ContainerList(props: Props) {
+  const { parentId, renderItemActions, children } = props;
+
   const { data, isPending, isError, refetch } = useQuery(
     containerQueries.children(parentId),
   );
@@ -40,17 +43,17 @@ export function ContainerList({ parentId, renderItemActions }: Props) {
     );
   }
 
-  if (data.length === 0) {
+  if (data.length === 0 && !children) {
     return <EmptyState icon={PackageOpen}>Здесь пока пусто</EmptyState>;
   }
 
   return (
-    <ul className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2'>
       {data.map(child => {
         const Icon = getContainerKindIcon(child.kind);
 
         return (
-          <li
+          <div
             key={child.id}
             className='flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:bg-surface-secondary'
           >
@@ -66,9 +69,11 @@ export function ContainerList({ parentId, renderItemActions }: Props) {
             </Link>
 
             {renderItemActions?.(child)}
-          </li>
+          </div>
         );
       })}
-    </ul>
+
+      {children}
+    </div>
   );
 }

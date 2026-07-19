@@ -14,6 +14,7 @@ export {
   Select,
   Skeleton,
   Spinner,
+  TextArea,
   TextField,
   Toast,
   Tooltip,
@@ -29,5 +30,6 @@ export { Brand } from './brand';
 export { EmptyState } from './empty-state';
 export { ErrorState } from './error-state';
 export { FormOtpField } from './form-otp-field';
+export { FormTextareaField } from './form-textarea-field';
 export { FormTextField } from './form-text-field';
 export { ThemeToggle } from './theme-toggle';

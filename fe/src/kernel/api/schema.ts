@@ -663,12 +663,12 @@ export interface components {
         };
         UpdateItemDto: {
             containerId?: string;
-            categoryId?: string;
             name?: string;
             quantity?: number;
             description?: string;
             photos?: string[];
             customFields?: components["schemas"]["CustomFieldDto"][];
+            categoryId?: string | null;
         };
         ItemQrResponseDto: {
             /** @enum {string} */
