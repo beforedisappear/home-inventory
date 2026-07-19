@@ -7,6 +7,7 @@ import {
 
 import { ContainerByIdPage } from '@/pages/container-by-id';
 import { HomePage } from '@/pages/home';
+import { ItemByIdPage } from '@/pages/item-by-id';
 import { LoginPage } from '@/pages/login';
 import { UserProfilePage } from '@/pages/user-profile';
 
@@ -55,10 +56,17 @@ const containerByIdRoute = createRoute({
   component: ContainerByIdPage,
 });
 
+const itemByIdRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: ROUTES.ITEM_BY_ID,
+  component: ItemByIdPage,
+});
+
 const protectedRoutes = protectedRoute.addChildren([
   indexRoute,
   profileRoute,
   containerByIdRoute,
+  itemByIdRoute,
 ]);
 
 const publicRoutes = [

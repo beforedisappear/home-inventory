@@ -1,12 +1,14 @@
 import type { ReactNode } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { Box } from 'lucide-react';
 
 import { categoryQueries } from '@/services/category';
 import { itemQueries } from '@/services/item';
 
 import type { components } from '@/kernel/api/schema';
+import { ROUTES } from '@/kernel/routes';
 
 import { Button, Chip, Typography } from '@/shared/ui';
 
@@ -35,7 +37,12 @@ export function ItemList({ containerId, renderItemActions }: Props) {
         <Typography type='body-sm' color='muted'>
           Не удалось загрузить вещи
         </Typography>
-        <Button type='button' variant='ghost' size='sm' onPress={() => refetch()}>
+        <Button
+          type='button'
+          variant='ghost'
+          size='sm'
+          onPress={() => refetch()}
+        >
           Повторить
         </Button>
       </div>
@@ -53,14 +60,21 @@ export function ItemList({ containerId, renderItemActions }: Props) {
           key={item.id}
           className='flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-3'
         >
-          <span className='flex min-w-0 flex-1 items-center gap-3'>
+          <Link
+            to={ROUTES.ITEM_BY_ID}
+            params={{ id: item.id }}
+            className='flex min-w-0 flex-1 items-center gap-3'
+          >
             <Box size={18} className='shrink-0 text-muted' />
+
             <Typography truncate>{item.name}</Typography>
+
             {item.quantity !== 1 && <Chip size='sm'>× {item.quantity}</Chip>}
+
             {item.categoryId && categoryNameById.has(item.categoryId) && (
               <Chip size='sm'>{categoryNameById.get(item.categoryId)}</Chip>
             )}
-          </span>
+          </Link>
 
           {renderItemActions?.(item)}
         </div>

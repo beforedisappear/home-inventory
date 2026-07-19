@@ -10,10 +10,11 @@ interface Props {
   itemId: string;
   containerId: string;
   itemName: string;
+  onDeleted?: () => void;
 }
 
 export function ItemDeleteTrigger(props: Props) {
-  const { itemId, containerId, itemName } = props;
+  const { itemId, containerId, itemName, onDeleted } = props;
   const state = useOverlayState();
 
   const { mutateAsync: deleteItem, isPending: isDeleting } = useMutation(
@@ -24,6 +25,7 @@ export function ItemDeleteTrigger(props: Props) {
     try {
       await deleteItem({ id: itemId, containerId });
       state.close();
+      onDeleted?.();
     } catch {
       toast.danger('Не удалось удалить вещь');
     }

@@ -14,11 +14,10 @@ type ItemResponseDto = components['schemas']['ItemResponseDto'];
 interface UseItemEditFormProps {
   item: ItemResponseDto;
   containerId: string;
-  onSuccess: () => void;
 }
 
 export function useItemEditForm(props: UseItemEditFormProps) {
-  const { item, containerId, onSuccess } = props;
+  const { item, containerId } = props;
 
   const { mutateAsync: updateItem } = useMutation(itemQueries.update());
 
@@ -43,7 +42,6 @@ export function useItemEditForm(props: UseItemEditFormProps) {
           },
         });
         toast.success('Вещь обновлена');
-        onSuccess();
       } catch {
         toast.danger('Не удалось сохранить изменения');
       }

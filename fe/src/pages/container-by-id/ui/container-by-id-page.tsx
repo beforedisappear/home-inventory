@@ -10,7 +10,6 @@ import { ContainerEdit } from '@/features/container-edit';
 import { ContainerList } from '@/features/container-list';
 import { CreateItem } from '@/features/item-create';
 import { ItemDeleteTrigger } from '@/features/item-delete';
-import { ItemEdit } from '@/features/item-edit';
 import { ItemList } from '@/features/item-list';
 
 import { ROUTES } from '@/kernel/routes';
@@ -67,14 +66,11 @@ export function ContainerByIdPage() {
           <ItemList
             containerId={id}
             renderItemActions={item => (
-              <>
-                <ItemEdit item={item} containerId={id} />
-                <ItemDeleteTrigger
-                  itemId={item.id}
-                  containerId={id}
-                  itemName={item.name}
-                />
-              </>
+              <ItemDeleteTrigger
+                itemId={item.id}
+                containerId={id}
+                itemName={item.name}
+              />
             )}
           />
           <CreateItem containerId={id} />
