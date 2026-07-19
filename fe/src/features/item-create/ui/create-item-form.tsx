@@ -7,8 +7,7 @@ import {
   Button,
   FormTextareaField,
   FormTextField,
-  ListBox,
-  Select,
+  SelectField,
   Spinner,
 } from '@/shared/ui';
 
@@ -42,32 +41,17 @@ export function CreateItemForm(props: Props) {
 
         <form.Field name='categoryId'>
           {field => (
-            <Select.Root
-              value={field.state.value || 'none'}
-              onChange={key =>
-                field.handleChange(String(key) === 'none' ? '' : String(key))
-              }
+            <SelectField
+              label='Категория'
               placeholder='Выберите категорию'
-              className='flex flex-col gap-1'
-            >
-              <Select.Trigger className='flex items-center justify-between gap-2 rounded-lg border border-field-border bg-field-background px-3 py-2'>
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-
-              <Select.Popover isNonModal>
-                <ListBox>
-                  <ListBox.Item key='none' id='none'>
-                    Без категории
-                  </ListBox.Item>
-                  {(categories ?? []).map(category => (
-                    <ListBox.Item key={category.id} id={category.id}>
-                      {category.name}
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
-            </Select.Root>
+              value={field.state.value}
+              onChange={field.handleChange}
+              options={(categories ?? []).map(category => ({
+                id: category.id,
+                label: category.name,
+              }))}
+              noneOption={{ id: 'none', label: 'Без категории' }}
+            />
           )}
         </form.Field>
 

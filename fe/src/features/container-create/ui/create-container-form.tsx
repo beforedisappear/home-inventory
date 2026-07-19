@@ -7,8 +7,7 @@ import type { components } from '@/kernel/api/schema';
 import {
   Button,
   FormTextField,
-  ListBox,
-  Select,
+  SelectField,
   Spinner,
   Typography,
 } from '@/shared/ui';
@@ -70,26 +69,16 @@ export function CreateContainerForm(props: Props) {
       {parentId !== null && !isDeadEnd && (
         <form.Field name='kind'>
           {field => (
-            <Select.Root
-              value={field.state.value || null}
-              onChange={key => field.handleChange(String(key))}
+            <SelectField
+              label='Тип'
               placeholder='Выберите тип'
-              className='flex flex-col gap-1'
-            >
-              <Select.Trigger className='flex items-center justify-between gap-2 rounded-lg border border-field-border bg-field-background px-3 py-2'>
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover isNonModal>
-                <ListBox>
-                  {allowedKinds.map(kind => (
-                    <ListBox.Item key={kind} id={kind}>
-                      {getContainerKindLabel(kind)}
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
-            </Select.Root>
+              value={field.state.value}
+              onChange={field.handleChange}
+              options={allowedKinds.map(kind => ({
+                id: kind,
+                label: getContainerKindLabel(kind) ?? kind,
+              }))}
+            />
           )}
         </form.Field>
       )}

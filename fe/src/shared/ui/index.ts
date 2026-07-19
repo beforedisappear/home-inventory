@@ -32,4 +32,5 @@ export { ErrorState } from './error-state';
 export { FormOtpField } from './form-otp-field';
 export { FormTextareaField } from './form-textarea-field';
 export { FormTextField } from './form-text-field';
+export { SelectField } from './select-field';
 export { ThemeToggle } from './theme-toggle';
