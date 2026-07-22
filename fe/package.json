@@ -14,6 +14,9 @@
     "api:sync": "bun run api:fetch && bun run api:gen"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@fontsource-variable/instrument-sans": "^5.2.8",
     "@heroui/react": "^3.2.1",
     "@heroui/styles": "^3.2.1",

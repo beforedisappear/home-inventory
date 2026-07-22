@@ -8,4 +8,5 @@ export const itemEditSchema = z.object({
     .regex(/^\d+$/, 'Введите целое число')
     .refine(v => Number(v) >= 1, 'Минимум 1'),
   description: z.string().max(2048, 'Слишком длинное описание'),
+  photos: z.array(z.string()),
 });

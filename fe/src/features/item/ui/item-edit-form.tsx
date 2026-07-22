@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useIsMutating, useQuery } from '@tanstack/react-query';
 
 import { categoryQueries } from '@/services/category';
+import { itemQueries } from '@/services/item';
 
 import type { components } from '@/kernel/api/schema';
 
@@ -13,6 +14,7 @@ import {
 } from '@/shared/ui';
 
 import { useItemEditForm } from '../model/use-item-edit-form';
+import { ItemPhotosField } from './item-photos-field';
 
 type ItemResponseDto = components['schemas']['ItemResponseDto'];
 
@@ -25,6 +27,9 @@ export function ItemEditForm({ item, containerId }: Props) {
   const { form } = useItemEditForm({ item, containerId });
 
   const { data: categories } = useQuery(categoryQueries.list());
+  const uploadingCount = useIsMutating({
+    mutationKey: itemQueries.uploadPhotoKey(),
+  });
 
   return (
     <form
@@ -65,6 +70,12 @@ export function ItemEditForm({ item, containerId }: Props) {
         {field => <FormTextareaField field={field} label='Описание' />}
       </form.Field>
 
+      <form.Field name='photos'>
+        {field => (
+          <ItemPhotosField field={field} initialPhotos={item.photos} />
+        )}
+      </form.Field>
+
       <form.Subscribe
         selector={s => ({
           canSubmit: s.canSubmit,
@@ -74,8 +85,8 @@ export function ItemEditForm({ item, containerId }: Props) {
         {({ canSubmit, isSubmitting }) => (
           <Button
             type='submit'
-            isDisabled={!canSubmit || isSubmitting}
-            className='self-start'
+            isDisabled={!canSubmit || isSubmitting || uploadingCount > 0}
+            className='w-full'
           >
             {isSubmitting ? <Spinner /> : 'Сохранить'}
           </Button>

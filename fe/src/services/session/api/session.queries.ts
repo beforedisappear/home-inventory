@@ -1,6 +1,6 @@
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 
-import { buildSessionMeKey } from '@/kernel/session/keys';
+import { buildSessionMeKey } from '@/kernel/session/query-keys';
 
 import { queryClient } from '@/shared/api/query-client';
 import { tokenStorage } from '@/shared/api/token-storage';

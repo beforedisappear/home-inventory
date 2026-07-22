@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from '@tanstack/react-router';
 
-import { ItemDetails } from '@/features/item';
+import { Item } from '@/features/item';
 
 import type { components } from '@/kernel/api/schema';
 import { ROUTES } from '@/kernel/routes';
@@ -20,7 +20,7 @@ export function ItemByIdPage() {
   return (
     <div className='flex flex-1 flex-col items-center p-4'>
       <div className='flex w-full max-w-2xl flex-1 flex-col gap-6'>
-        <ItemDetails id={id} onDeleted={handleDeleted} />
+        <Item id={id} onDeleted={handleDeleted} />
       </div>
     </div>
   );

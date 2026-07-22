@@ -1,13 +1,13 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { buildCategoryListKey } from '@/kernel/category/keys';
-
 import { findAllCategoriesRequest } from './find-all';
 
 export const categoryQueries = {
+  listKey: () => ['category', 'list'] as const,
+
   list: () =>
     queryOptions({
-      queryKey: buildCategoryListKey(),
+      queryKey: categoryQueries.listKey(),
       queryFn: findAllCategoriesRequest,
     }),
 };

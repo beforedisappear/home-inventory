@@ -27,6 +27,7 @@ export function useItemEditForm(props: UseItemEditFormProps) {
       categoryId: item.categoryId ?? '',
       quantity: String(item.quantity),
       description: item.description ?? '',
+      photos: item.photos.map(photo => photo.key),
     },
     validators: { onSubmit: itemEditSchema },
     onSubmit: async ({ value }) => {
@@ -39,6 +40,7 @@ export function useItemEditForm(props: UseItemEditFormProps) {
             categoryId: value.categoryId || null,
             quantity: Number(value.quantity),
             description: value.description || undefined,
+            photos: value.photos,
           },
         });
         toast.success('Вещь обновлена');

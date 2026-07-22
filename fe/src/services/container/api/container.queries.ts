@@ -1,10 +1,5 @@
 import { mutationOptions, queryOptions } from '@tanstack/react-query';
 
-import {
-  buildContainerByIdKey,
-  buildContainerChildrenKey,
-} from '@/kernel/container/keys';
-
 import { queryClient } from '@/shared/api/query-client';
 
 import { createContainerRequest } from './create';
@@ -14,15 +9,20 @@ import { findChildrenRequest } from './find-children';
 import { updateContainerRequest } from './update';
 
 export const containerQueries = {
+  childrenKey: (parentId: string | null) =>
+    ['container', 'children', parentId] as const,
+
+  byIdKey: (id: string) => ['container', id] as const,
+
   children: (parentId: string | null) =>
     queryOptions({
-      queryKey: buildContainerChildrenKey(parentId),
+      queryKey: containerQueries.childrenKey(parentId),
       queryFn: () => findChildrenRequest(parentId),
     }),
 
   byId: (id: string) =>
     queryOptions({
-      queryKey: buildContainerByIdKey(id),
+      queryKey: containerQueries.byIdKey(id),
       queryFn: () => findContainerByIdRequest(id),
     }),
 
@@ -31,7 +31,7 @@ export const containerQueries = {
       mutationFn: createContainerRequest,
       onSuccess: data => {
         queryClient.invalidateQueries({
-          queryKey: buildContainerChildrenKey(data.parentId),
+          queryKey: containerQueries.childrenKey(data.parentId),
         });
       },
     }),
@@ -42,9 +42,11 @@ export const containerQueries = {
         deleteContainerRequest(vars.id),
       onSuccess: (_data, vars) => {
         queryClient.invalidateQueries({
-          queryKey: buildContainerChildrenKey(vars.parentId),
+          queryKey: containerQueries.childrenKey(vars.parentId),
         });
-        queryClient.removeQueries({ queryKey: buildContainerByIdKey(vars.id) });
+        queryClient.removeQueries({
+          queryKey: containerQueries.byIdKey(vars.id),
+        });
       },
     }),
 
@@ -54,10 +56,10 @@ export const containerQueries = {
         updateContainerRequest(vars.id, { name: vars.name }),
       onSuccess: (_data, vars) => {
         queryClient.invalidateQueries({
-          queryKey: buildContainerByIdKey(vars.id),
+          queryKey: containerQueries.byIdKey(vars.id),
         });
         queryClient.invalidateQueries({
-          queryKey: buildContainerChildrenKey(vars.parentId),
+          queryKey: containerQueries.childrenKey(vars.parentId),
         });
       },
     }),

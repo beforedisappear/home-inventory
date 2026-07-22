@@ -9,7 +9,7 @@ import { itemQueries } from '@/services/item';
 import type { components } from '@/kernel/api/schema';
 import { ROUTES } from '@/kernel/routes';
 
-import { ErrorState, Skeleton, Typography } from '@/shared/ui';
+import { ErrorState, Skeleton, Spinner, Typography } from '@/shared/ui';
 
 import { ItemEditForm } from './item-edit-form';
 
@@ -20,7 +20,7 @@ interface Props {
   onDeleted?: (item: ItemResponseDto) => void;
 }
 
-export function ItemDetails({ id, onDeleted }: Props) {
+export function Item({ id, onDeleted }: Props) {
   const {
     data: item,
     isPending,
@@ -30,10 +30,16 @@ export function ItemDetails({ id, onDeleted }: Props) {
 
   if (isPending) {
     return (
-      <div className='flex flex-col gap-2 border-b border-border pb-4'>
-        <Skeleton className='h-6 w-24' />
-        <Skeleton className='h-8 w-48' />
-      </div>
+      <>
+        <div className='flex items-center justify-between gap-2 border-b border-border pb-4'>
+          <Skeleton className='h-4 w-32' />
+          <Skeleton className='size-8 rounded-lg' />
+        </div>
+
+        <div className='flex flex-1 flex-col items-center justify-center'>
+          <Spinner />
+        </div>
+      </>
     );
   }
 
