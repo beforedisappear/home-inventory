@@ -10,7 +10,7 @@ import type { components } from '@/kernel/api/schema';
 import { getContainerKindLabel } from '@/kernel/container/kind-label';
 import { ROUTES } from '@/kernel/routes';
 
-import { Chip, ErrorState, Skeleton, Typography } from '@/shared/ui';
+import { Chip, Skeleton, Typography } from '@/shared/ui';
 
 import { ContainerName } from './container-name';
 
@@ -26,7 +26,6 @@ export function ContainerHeader({ parentId, actions }: Props) {
     data: container,
     isPending,
     isError,
-    refetch,
   } = useQuery(containerQueries.byId(parentId));
 
   const { data: parent } = useQuery({
@@ -44,19 +43,7 @@ export function ContainerHeader({ parentId, actions }: Props) {
   }
 
   if (isError || !container) {
-    return (
-      <div className='flex flex-col gap-2 border-b border-border pb-4'>
-        <ErrorState onRetry={() => refetch()}>
-          Не удалось загрузить контейнер
-        </ErrorState>
-        <Link to={ROUTES.HOME} className='inline-flex w-fit items-center gap-1'>
-          <ChevronLeft size={16} />
-          <Typography type='body-sm' color='muted'>
-            На главную
-          </Typography>
-        </Link>
-      </div>
-    );
+    return null;
   }
 
   const kindLabel = getContainerKindLabel(container.kind);
