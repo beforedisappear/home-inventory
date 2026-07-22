@@ -1,10 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import { useIsMutating, useQuery } from '@tanstack/react-query';
 
 import { categoryQueries } from '@/services/category';
+import { CustomFieldsField, ItemPhotosField, itemQueries } from '@/services/item';
 
 import {
-  AdaptiveModal,
   Button,
+  Drawer,
   FormTextareaField,
   FormTextField,
   SelectField,
@@ -24,17 +25,20 @@ export function CreateItemForm(props: Props) {
   const { form } = useCreateItemForm({ containerId, onSuccess });
 
   const { data: categories } = useQuery(categoryQueries.list());
+  const uploadingCount = useIsMutating({
+    mutationKey: itemQueries.uploadPhotoKey(),
+  });
 
   return (
     <form
-      className='flex flex-1 flex-col'
+      className='flex min-h-0 flex-1 flex-col'
       onSubmit={e => {
         e.preventDefault();
         e.stopPropagation();
         void form.handleSubmit();
       }}
     >
-      <AdaptiveModal.Body className='flex flex-col gap-4'>
+      <Drawer.Body className='flex flex-col gap-4'>
         <form.Field name='name'>
           {field => <FormTextField field={field} label='Название' />}
         </form.Field>
@@ -64,9 +68,17 @@ export function CreateItemForm(props: Props) {
         <form.Field name='description'>
           {field => <FormTextareaField field={field} label='Описание' />}
         </form.Field>
-      </AdaptiveModal.Body>
 
-      <AdaptiveModal.Footer>
+        <form.Field name='photos'>
+          {field => <ItemPhotosField field={field} initialPhotos={[]} />}
+        </form.Field>
+
+        <form.Field name='customFields'>
+          {field => <CustomFieldsField field={field} />}
+        </form.Field>
+      </Drawer.Body>
+
+      <Drawer.Footer>
         <form.Subscribe
           selector={s => ({
             canSubmit: s.canSubmit,
@@ -74,12 +86,15 @@ export function CreateItemForm(props: Props) {
           })}
         >
           {({ canSubmit, isSubmitting }) => (
-            <Button type='submit' isDisabled={!canSubmit || isSubmitting}>
+            <Button
+              type='submit'
+              isDisabled={!canSubmit || isSubmitting || uploadingCount > 0}
+            >
               {isSubmitting ? <Spinner /> : 'Добавить'}
             </Button>
           )}
         </form.Subscribe>
-      </AdaptiveModal.Footer>
+      </Drawer.Footer>
     </form>
   );
 }

@@ -2,8 +2,8 @@ import { Plus } from 'lucide-react';
 
 import { useOverlayState } from '@/shared/ui';
 
+import { CreateItemDrawer } from './create-item-drawer';
 import { CreateItemForm } from './create-item-form';
-import { CreateItemModal } from './create-item-modal';
 
 interface Props {
   containerId: string;
@@ -23,9 +23,9 @@ export function CreateItem({ containerId }: Props) {
         <span className='text-sm'>Добавить вещь</span>
       </button>
 
-      <CreateItemModal state={state}>
+      <CreateItemDrawer state={state}>
         <CreateItemForm containerId={containerId} onSuccess={state.close} />
-      </CreateItemModal>
+      </CreateItemDrawer>
     </>
   );
 }

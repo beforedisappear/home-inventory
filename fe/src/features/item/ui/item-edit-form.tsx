@@ -1,7 +1,7 @@
 import { useIsMutating, useQuery } from '@tanstack/react-query';
 
 import { categoryQueries } from '@/services/category';
-import { itemQueries } from '@/services/item';
+import { CustomFieldsField, ItemPhotosField, itemQueries } from '@/services/item';
 
 import type { components } from '@/kernel/api/schema';
 
@@ -14,7 +14,6 @@ import {
 } from '@/shared/ui';
 
 import { useItemEditForm } from '../model/use-item-edit-form';
-import { ItemPhotosField } from './item-photos-field';
 
 type ItemResponseDto = components['schemas']['ItemResponseDto'];
 
@@ -74,6 +73,10 @@ export function ItemEditForm({ item, containerId }: Props) {
         {field => (
           <ItemPhotosField field={field} initialPhotos={item.photos} />
         )}
+      </form.Field>
+
+      <form.Field name='customFields'>
+        {field => <CustomFieldsField field={field} />}
       </form.Field>
 
       <form.Subscribe

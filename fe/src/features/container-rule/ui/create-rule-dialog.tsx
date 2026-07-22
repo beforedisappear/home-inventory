@@ -15,7 +15,7 @@ export function CreateRuleDialog() {
     <AdaptiveDrawer
       state={state}
       heading='Новое правило'
-      dialogClassName='sm:w-1/2 '
+      dialogClassName='sm:w-2/5'
     >
       <CreateRuleForm onCreated={state.close} onCancel={state.close} />
     </AdaptiveDrawer>

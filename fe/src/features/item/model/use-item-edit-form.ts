@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 
 import type { components } from '@/kernel/api/schema';
 
-import { itemQueries } from '@/services/item';
+import { itemQueries, toItemDto } from '@/services/item';
 
 import { toast } from '@/shared/ui';
 
@@ -28,6 +28,11 @@ export function useItemEditForm(props: UseItemEditFormProps) {
       quantity: String(item.quantity),
       description: item.description ?? '',
       photos: item.photos.map(photo => photo.key),
+      customFields: item.customFields.map(f => ({
+        key: f.key,
+        type: f.type,
+        value: String(f.value),
+      })),
     },
     validators: { onSubmit: itemEditSchema },
     onSubmit: async ({ value }) => {
@@ -35,13 +40,7 @@ export function useItemEditForm(props: UseItemEditFormProps) {
         await updateItem({
           id: item.id,
           containerId,
-          dto: {
-            name: value.name,
-            categoryId: value.categoryId || null,
-            quantity: Number(value.quantity),
-            description: value.description || undefined,
-            photos: value.photos,
-          },
+          dto: toItemDto(value, value.categoryId || null),
         });
         toast.success('Вещь обновлена');
       } catch {
