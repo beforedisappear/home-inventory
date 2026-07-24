@@ -29,7 +29,7 @@ export function Header() {
   };
 
   return (
-    <header className='flex items-center justify-between border-b border-border px-6 py-4'>
+    <header className='sticky top-0 z-20 flex items-center justify-between border-b border-border bg-surface px-6 py-4'>
       <Link to={ROUTES.HOME}>
         <Brand title={PROJECT_NAME} />
       </Link>

@@ -1,5 +1,7 @@
 import { Label, ListBox, Select } from '@heroui/react';
 
+import { cn } from '@/shared/lib/cn';
+
 interface SelectFieldOption {
   id: string;
   label: string;
@@ -12,12 +14,14 @@ interface SelectFieldProps {
   options: SelectFieldOption[];
   label?: string;
   noneOption?: SelectFieldOption;
+  className?: string;
 }
 
 // связывает value/onChange домена (пустая строка = "не выбрано") с Select,
 // которому нужен непустой ключ — noneOption даёт этому ключу отображение
 export function SelectField(props: SelectFieldProps) {
-  const { value, onChange, placeholder, options, label, noneOption } = props;
+  const { value, onChange, placeholder, options, label, noneOption, className } =
+    props;
 
   return (
     <Select.Root
@@ -27,7 +31,7 @@ export function SelectField(props: SelectFieldProps) {
         onChange(noneOption && selected === noneOption.id ? '' : selected);
       }}
       placeholder={placeholder}
-      className='flex flex-col gap-1'
+      className={cn('flex flex-col gap-1', className)}
     >
       {label && <Label>{label}</Label>}
 

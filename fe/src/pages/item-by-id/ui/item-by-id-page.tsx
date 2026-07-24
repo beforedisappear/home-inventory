@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from '@tanstack/react-router';
 
+import { CategoryManager } from '@/features/category-manager';
 import { Item } from '@/features/item';
 
 import type { components } from '@/kernel/api/schema';
@@ -20,7 +21,11 @@ export function ItemByIdPage() {
   return (
     <div className='flex flex-1 flex-col items-center p-4'>
       <div className='flex w-full max-w-2xl flex-1 flex-col gap-6'>
-        <Item id={id} onDeleted={handleDeleted} />
+        <Item
+          id={id}
+          onDeleted={handleDeleted}
+          categorySlot={<CategoryManager />}
+        />
       </div>
     </div>
   );

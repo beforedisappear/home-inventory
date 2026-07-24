@@ -7,6 +7,7 @@ import { useDeviceType } from '@/shared/lib/device-type';
 interface AdaptiveModalProps {
   state: UseOverlayStateReturn;
   heading: string;
+  headerAction?: ReactNode;
   children: ReactNode;
   className?: string;
 }
@@ -15,7 +16,7 @@ interface AdaptiveModalProps {
 // на мобилке — bottom-дровер с ручкой. контент внутри использует
 // AdaptiveModal.Body / AdaptiveModal.Footer — они переключаются вместе с обёрткой
 export function AdaptiveModal(props: AdaptiveModalProps) {
-  const { state, heading, children, className } = props;
+  const { state, heading, headerAction, children, className } = props;
   const { isMobile } = useDeviceType();
 
   if (isMobile) {
@@ -26,7 +27,10 @@ export function AdaptiveModal(props: AdaptiveModalProps) {
             <Drawer.Dialog className={className}>
               <Drawer.Handle />
               <Drawer.Header>
-                <Drawer.Heading>{heading}</Drawer.Heading>
+                <div className='flex items-center gap-2'>
+                  <Drawer.Heading>{heading}</Drawer.Heading>
+                  {headerAction}
+                </div>
                 <Drawer.CloseTrigger />
               </Drawer.Header>
 
@@ -44,7 +48,10 @@ export function AdaptiveModal(props: AdaptiveModalProps) {
         <Modal.Container>
           <Modal.Dialog className={className}>
             <Modal.Header>
-              <Modal.Heading>{heading}</Modal.Heading>
+              <div className='flex items-center gap-2'>
+                <Modal.Heading>{heading}</Modal.Heading>
+                {headerAction}
+              </div>
               <Modal.CloseTrigger />
             </Modal.Header>
 

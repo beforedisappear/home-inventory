@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Plus } from 'lucide-react';
 
 import { useOverlayState } from '@/shared/ui';
@@ -7,9 +8,10 @@ import { CreateItemForm } from './create-item-form';
 
 interface Props {
   containerId: string;
+  categorySlot?: ReactNode;
 }
 
-export function CreateItem({ containerId }: Props) {
+export function CreateItem({ containerId, categorySlot }: Props) {
   const state = useOverlayState();
 
   return (
@@ -24,7 +26,11 @@ export function CreateItem({ containerId }: Props) {
       </button>
 
       <CreateItemDrawer state={state}>
-        <CreateItemForm containerId={containerId} onSuccess={state.close} />
+        <CreateItemForm
+          containerId={containerId}
+          onSuccess={state.close}
+          categorySlot={categorySlot}
+        />
       </CreateItemDrawer>
     </>
   );

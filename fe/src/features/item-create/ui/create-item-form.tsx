@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useIsMutating, useQuery } from '@tanstack/react-query';
 
 import { categoryQueries } from '@/services/category';
@@ -17,10 +18,11 @@ import { useCreateItemForm } from '../model/use-create-item-form';
 interface Props {
   containerId: string;
   onSuccess: () => void;
+  categorySlot?: ReactNode;
 }
 
 export function CreateItemForm(props: Props) {
-  const { containerId, onSuccess } = props;
+  const { containerId, onSuccess, categorySlot } = props;
 
   const { form } = useCreateItemForm({ containerId, onSuccess });
 
@@ -45,17 +47,21 @@ export function CreateItemForm(props: Props) {
 
         <form.Field name='categoryId'>
           {field => (
-            <SelectField
-              label='Категория'
-              placeholder='Выберите категорию'
-              value={field.state.value}
-              onChange={field.handleChange}
-              options={(categories ?? []).map(category => ({
-                id: category.id,
-                label: category.name,
-              }))}
-              noneOption={{ id: 'none', label: 'Без категории' }}
-            />
+            <div className='flex items-end gap-2'>
+              <SelectField
+                className='flex-1'
+                label='Категория'
+                placeholder='Выберите категорию'
+                value={field.state.value}
+                onChange={field.handleChange}
+                options={(categories ?? []).map(category => ({
+                  id: category.id,
+                  label: category.name,
+                }))}
+                noneOption={{ id: 'none', label: 'Без категории' }}
+              />
+              {categorySlot}
+            </div>
           )}
         </form.Field>
 

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useIsMutating, useQuery } from '@tanstack/react-query';
 
 import { categoryQueries } from '@/services/category';
@@ -20,9 +21,10 @@ type ItemResponseDto = components['schemas']['ItemResponseDto'];
 interface Props {
   item: ItemResponseDto;
   containerId: string;
+  categorySlot?: ReactNode;
 }
 
-export function ItemEditForm({ item, containerId }: Props) {
+export function ItemEditForm({ item, containerId, categorySlot }: Props) {
   const { form } = useItemEditForm({ item, containerId });
 
   const { data: categories } = useQuery(categoryQueries.list());
@@ -45,17 +47,21 @@ export function ItemEditForm({ item, containerId }: Props) {
 
       <form.Field name='categoryId'>
         {field => (
-          <SelectField
-            label='Категория'
-            placeholder='Выберите категорию'
-            value={field.state.value}
-            onChange={field.handleChange}
-            options={(categories ?? []).map(category => ({
-              id: category.id,
-              label: category.name,
-            }))}
-            noneOption={{ id: 'none', label: 'Без категории' }}
-          />
+          <div className='flex items-end gap-2'>
+            <SelectField
+              className='flex-1'
+              label='Категория'
+              placeholder='Выберите категорию'
+              value={field.state.value}
+              onChange={field.handleChange}
+              options={(categories ?? []).map(category => ({
+                id: category.id,
+                label: category.name,
+              }))}
+              noneOption={{ id: 'none', label: 'Без категории' }}
+            />
+            {categorySlot}
+          </div>
         )}
       </form.Field>
 

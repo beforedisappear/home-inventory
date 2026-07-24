@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from '@tanstack/react-router';
 
+import { CategoryManager } from '@/features/category-manager';
 import { ContainerHeader } from '@/features/container';
 import { CreateContainer } from '@/features/container-create';
 import {
@@ -73,7 +74,10 @@ export function ContainerByIdPage() {
               />
             )}
           />
-          <CreateItem containerId={id} />
+          <CreateItem
+            containerId={id}
+            categorySlot={<CategoryManager />}
+          />
         </ContainerList>
       </div>
 

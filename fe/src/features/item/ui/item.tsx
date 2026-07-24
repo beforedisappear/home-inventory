@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
@@ -18,9 +19,10 @@ type ItemResponseDto = components['schemas']['ItemResponseDto'];
 interface Props {
   id: string;
   onDeleted?: (item: ItemResponseDto) => void;
+  categorySlot?: ReactNode;
 }
 
-export function Item({ id, onDeleted }: Props) {
+export function Item({ id, onDeleted, categorySlot }: Props) {
   const {
     data: item,
     isPending,
@@ -76,7 +78,11 @@ export function Item({ id, onDeleted }: Props) {
       </div>
 
       <div className='flex w-full flex-col gap-4 rounded-2xl border border-border bg-surface p-10 shadow-xl'>
-        <ItemEditForm item={item} containerId={item.containerId} />
+        <ItemEditForm
+          item={item}
+          containerId={item.containerId}
+          categorySlot={categorySlot}
+        />
       </div>
     </>
   );
