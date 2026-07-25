@@ -5,7 +5,6 @@ import { Queue } from 'bullmq';
 
 import { StorageService } from '@/libs/storage/storage.service';
 
-import { ITEM_QR_PAYLOAD_PREFIX } from '../constants/item-qr';
 import {
   ITEM_QR_GENERATE_JOB,
   ITEM_QR_QUEUE,
@@ -18,17 +17,11 @@ export class ItemQrService {
   constructor(
     private readonly repo: ItemRepository,
     private readonly storage: StorageService,
-
     @InjectQueue(ITEM_QR_QUEUE)
     private readonly queue: Queue<ItemQrGenerateJobData>,
   ) {}
 
-  static buildPayload(itemId: string): string {
-    return `${ITEM_QR_PAYLOAD_PREFIX}${itemId}`;
-  }
-
   async enqueueGenerate(itemId: string, ownerId: string) {
-    // атомарный гард: если уже pending — null, отбиваем 409
     const updated = await this.repo.setQrPending(itemId);
 
     if (!updated)

@@ -4,6 +4,8 @@ import { Types } from 'mongoose';
 
 import type { TimestampedDocument } from '@/shared/types/mongo';
 
+import { QR_STATUSES, type QrStatus } from '../interfaces/qr.types';
+
 // Тип контейнера для UI-иконки и правил вложения.
 // "Корневой" статус определяется через parentId === null, отдельного kind для этого не надо.
 export const CONTAINER_KIND = [
@@ -57,6 +59,12 @@ export class Container {
     default: null,
   })
   ruleId: Types.ObjectId | null;
+
+  @Prop({ type: String, enum: QR_STATUSES, default: 'none' })
+  qrStatus: QrStatus;
+
+  @Prop({ type: String, default: null })
+  qrKey: string | null;
 }
 
 export const ContainerSchema = SchemaFactory.createForClass(Container);

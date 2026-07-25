@@ -30,24 +30,22 @@ import { ItemService } from './services/item.service';
     forwardRef(() => ContainerModule),
     forwardRef(() => CategoryModule),
     forwardRef(() => DocumentModule),
-    BullModule.registerQueue({ name: ITEM_PHOTO_QUEUE }),
-    BullModule.registerQueue({ name: ITEM_QR_QUEUE }),
-    BullBoardModule.forFeature({
-      name: ITEM_PHOTO_QUEUE,
-      adapter: BullMQAdapter,
-    }),
-    BullBoardModule.forFeature({
-      name: ITEM_QR_QUEUE,
-      adapter: BullMQAdapter,
-    }),
+    BullModule.registerQueue(
+      { name: ITEM_PHOTO_QUEUE },
+      { name: ITEM_QR_QUEUE },
+    ),
+    BullBoardModule.forFeature(
+      { name: ITEM_PHOTO_QUEUE, adapter: BullMQAdapter },
+      { name: ITEM_QR_QUEUE, adapter: BullMQAdapter },
+    ),
   ],
   controllers: [ItemController],
   providers: [
     ItemService,
     ItemPhotoService,
-    ItemQrService,
     ItemRepository,
     ItemPhotoCompressProcessor,
+    ItemQrService,
     ItemQrGenerateProcessor,
   ],
   exports: [ItemService],

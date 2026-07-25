@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 
 import { ItemService } from '@/api/item/services/item.service';
+import { StorageService } from '@/libs/storage/storage.service';
 
 import { CreateContainerDto } from '../dto/create-container.dto';
 import { MoveContainerDto } from '../dto/move-container.dto';
@@ -17,6 +18,7 @@ import { ContainerMapper } from '../mappers/container.mapper';
 import { ContainerRepository } from '../repositories/container.repository';
 import type { ContainerRuleDocument } from '../schemas/container-rule.schema';
 import type { ContainerKind } from '../schemas/container.schema';
+import { ContainerQrService } from './container-qr.service';
 import { ContainerRuleService } from './container-rule.service';
 
 @Injectable()
@@ -24,6 +26,9 @@ export class ContainerService {
   constructor(
     private readonly repo: ContainerRepository,
     private readonly ruleService: ContainerRuleService,
+    private readonly storage: StorageService,
+    private readonly qrService: ContainerQrService,
+
     // forwardRef из-за circular dep: ItemService инжектит ContainerService
     @Inject(forwardRef(() => ItemService))
     private readonly itemService: ItemService,
@@ -128,9 +133,39 @@ export class ContainerService {
     if (hasItems)
       throw new ConflictException('Container is not empty (has items)');
 
+    await this.qrService.deleteIfExists(container.qrKey);
+
     await this.repo.delete(id);
 
     return { id };
+  }
+
+  async getQr(ownerId: string, id: string) {
+    const container = await this.repo.findById(id);
+
+    if (!container || container.ownerId.toString() !== ownerId)
+      throw new NotFoundException('Container not found');
+
+    if (!container.kind)
+      throw new BadRequestException('QR is not available for root containers');
+
+    return ContainerMapper.toQrResponseDto(container, this.storage.buildUrl);
+  }
+
+  async generateQr(ownerId: string, id: string) {
+    const container = await this.repo.findById(id);
+
+    if (!container || container.ownerId.toString() !== ownerId)
+      throw new NotFoundException('Container not found');
+
+    if (!container.kind)
+      throw new BadRequestException('QR is not available for root containers');
+
+    await this.qrService.enqueueGenerate(id, ownerId);
+
+    container.qrStatus = 'pending';
+
+    return ContainerMapper.toQrResponseDto(container, this.storage.buildUrl);
   }
 
   async move(ownerId: string, id: string, dto: MoveContainerDto) {

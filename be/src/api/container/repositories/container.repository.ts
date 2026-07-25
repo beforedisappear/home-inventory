@@ -81,4 +81,26 @@ export class ContainerRepository {
   delete(id: string) {
     return this.containerModel.findByIdAndDelete(id).exec();
   }
+
+  setQrPending(id: string) {
+    return this.containerModel
+      .findOneAndUpdate(
+        { _id: id, qrStatus: { $ne: 'pending' } },
+        { $set: { qrStatus: 'pending' } },
+        { new: true },
+      )
+      .exec();
+  }
+
+  setQrReady(id: string, key: string) {
+    return this.containerModel
+      .updateOne({ _id: id }, { $set: { qrStatus: 'ready', qrKey: key } })
+      .exec();
+  }
+
+  setQrFailed(id: string) {
+    return this.containerModel
+      .updateOne({ _id: id }, { $set: { qrStatus: 'failed' } })
+      .exec();
+  }
 }
