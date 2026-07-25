@@ -12,6 +12,10 @@ import { ContainerList } from '@/features/container-list';
 import { CreateItem } from '@/features/item-create';
 import { ItemDeleteTrigger } from '@/features/item-delete';
 import { ItemList } from '@/features/item-list';
+import { QrButton, QrTrigger } from '@/features/qr';
+
+import { containerQueries } from '@/services/container';
+import { itemQueries } from '@/services/item';
 
 import { ROUTES } from '@/kernel/routes';
 
@@ -37,6 +41,13 @@ export function ContainerByIdPage() {
 
             return (
               <>
+                {container.kind && (
+                  <QrTrigger
+                    entityId={container.id}
+                    qrQueryOptions={containerQueries.qr(container.id)}
+                    generateMutationOptions={containerQueries.generateQr()}
+                  />
+                )}
                 <ContainerEdit
                   containerId={container.id}
                   parentId={container.parentId}
@@ -57,27 +68,41 @@ export function ContainerByIdPage() {
         <ContainerList
           parentId={id}
           renderItemActions={child => (
-            <ContainerDeleteTrigger
-              containerId={child.id}
-              parentId={id}
-              containerName={child.name}
-            />
+            <>
+              {child.kind && (
+                <QrButton
+                  entityId={child.id}
+                  qrQueryOptions={containerQueries.qr(child.id)}
+                  generateMutationOptions={containerQueries.generateQr()}
+                />
+              )}
+
+              <ContainerDeleteTrigger
+                containerId={child.id}
+                parentId={id}
+                containerName={child.name}
+              />
+            </>
           )}
         >
           <ItemList
             containerId={id}
             renderItemActions={item => (
-              <ItemDeleteTrigger
-                itemId={item.id}
-                containerId={id}
-                itemName={item.name}
-              />
+              <>
+                <QrButton
+                  entityId={item.id}
+                  qrQueryOptions={itemQueries.qr(item.id)}
+                  generateMutationOptions={itemQueries.generateQr()}
+                />
+                <ItemDeleteTrigger
+                  itemId={item.id}
+                  containerId={id}
+                  itemName={item.name}
+                />
+              </>
             )}
           />
-          <CreateItem
-            containerId={id}
-            categorySlot={<CategoryManager />}
-          />
+          <CreateItem containerId={id} categorySlot={<CategoryManager />} />
         </ContainerList>
       </div>
 

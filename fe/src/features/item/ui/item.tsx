@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
@@ -20,9 +21,12 @@ interface Props {
   id: string;
   onDeleted?: (item: ItemResponseDto) => void;
   categorySlot?: ReactNode;
+  headerActions?: ReactNode;
 }
 
-export function Item({ id, onDeleted, categorySlot }: Props) {
+export function Item(props: Props) {
+  const { id, onDeleted, categorySlot, headerActions } = props;
+
   const {
     data: item,
     isPending,
@@ -69,12 +73,16 @@ export function Item({ id, onDeleted, categorySlot }: Props) {
           </Typography>
         </Link>
 
-        <ItemDeleteTrigger
-          itemId={item.id}
-          containerId={item.containerId}
-          itemName={item.name}
-          onDeleted={() => onDeleted?.(item)}
-        />
+        <div className='flex items-center gap-1'>
+          {headerActions}
+
+          <ItemDeleteTrigger
+            itemId={item.id}
+            containerId={item.containerId}
+            itemName={item.name}
+            onDeleted={() => onDeleted?.(item)}
+          />
+        </div>
       </div>
 
       <div className='flex w-full flex-col gap-4 rounded-2xl border border-border bg-surface p-10 shadow-xl'>

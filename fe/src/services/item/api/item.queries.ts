@@ -7,6 +7,8 @@ import { createItemRequest } from './create';
 import { deleteItemRequest } from './delete';
 import { findItemByIdRequest } from './find-by-id';
 import { findItemsByContainerRequest } from './find-by-container';
+import { generateItemQrRequest } from './generate-qr';
+import { getItemQrRequest } from './get-qr';
 import { updateItemRequest } from './update';
 import { uploadItemPhotoRequest } from './upload-photo';
 
@@ -74,5 +76,23 @@ export const itemQueries = {
     mutationOptions({
       mutationKey: itemQueries.uploadPhotoKey(),
       mutationFn: uploadItemPhotoRequest,
+    }),
+
+  qrKey: (id: string) => ['items', 'qr', id] as const,
+
+  qr: (id: string) =>
+    queryOptions({
+      queryKey: itemQueries.qrKey(id),
+      queryFn: () => getItemQrRequest(id),
+      refetchInterval: query =>
+        query.state.data?.status === 'pending' ? 2000 : false,
+    }),
+
+  generateQr: () =>
+    mutationOptions({
+      mutationFn: (id: string) => generateItemQrRequest(id),
+      onSuccess: (_data, id) => {
+        queryClient.invalidateQueries({ queryKey: itemQueries.qrKey(id) });
+      },
     }),
 };

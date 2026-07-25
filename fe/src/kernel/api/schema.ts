@@ -178,6 +178,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/containers/{id}/qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить QR-код */
+        get: operations["ContainerController_getQr_v1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/containers/{id}/qr/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Запустить генерацию QR-кода */
+        post: operations["ContainerController_generateQr_v1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/container-rules": {
         parameters: {
             query?: never;
@@ -604,6 +638,11 @@ export interface components {
         };
         MoveContainerDto: {
             parentId: string;
+        };
+        ContainerQrResponseDto: {
+            /** @enum {string} */
+            status: "none" | "pending" | "ready" | "failed";
+            url: string | null;
         };
         KindRuleDto: {
             /** @enum {string} */
@@ -1142,6 +1181,62 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ContainerResponseDto"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ContainerController_getQr_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContainerQrResponseDto"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ContainerController_generateQr_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContainerQrResponseDto"];
                 };
             };
             /** @description Unauthorized */

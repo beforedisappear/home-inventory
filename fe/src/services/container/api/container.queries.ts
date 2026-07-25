@@ -6,6 +6,8 @@ import { createContainerRequest } from './create';
 import { deleteContainerRequest } from './delete';
 import { findContainerByIdRequest } from './find-by-id';
 import { findChildrenRequest } from './find-children';
+import { generateContainerQrRequest } from './generate-qr';
+import { getContainerQrRequest } from './get-qr';
 import { updateContainerRequest } from './update';
 
 export const containerQueries = {
@@ -60,6 +62,26 @@ export const containerQueries = {
         });
         queryClient.invalidateQueries({
           queryKey: containerQueries.childrenKey(vars.parentId),
+        });
+      },
+    }),
+
+  qrKey: (id: string) => ['container', 'qr', id] as const,
+
+  qr: (id: string) =>
+    queryOptions({
+      queryKey: containerQueries.qrKey(id),
+      queryFn: () => getContainerQrRequest(id),
+      refetchInterval: query =>
+        query.state.data?.status === 'pending' ? 2000 : false,
+    }),
+
+  generateQr: () =>
+    mutationOptions({
+      mutationFn: (id: string) => generateContainerQrRequest(id),
+      onSuccess: (_data, id) => {
+        queryClient.invalidateQueries({
+          queryKey: containerQueries.qrKey(id),
         });
       },
     }),

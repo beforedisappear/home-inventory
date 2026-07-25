@@ -2,6 +2,9 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 
 import { CategoryManager } from '@/features/category-manager';
 import { Item } from '@/features/item';
+import { QrTrigger } from '@/features/qr';
+
+import { itemQueries } from '@/services/item';
 
 import type { components } from '@/kernel/api/schema';
 import { ROUTES } from '@/kernel/routes';
@@ -25,6 +28,13 @@ export function ItemByIdPage() {
           id={id}
           onDeleted={handleDeleted}
           categorySlot={<CategoryManager />}
+          headerActions={
+            <QrTrigger
+              entityId={id}
+              qrQueryOptions={itemQueries.qr(id)}
+              generateMutationOptions={itemQueries.generateQr()}
+            />
+          }
         />
       </div>
     </div>
