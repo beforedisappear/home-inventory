@@ -4,8 +4,9 @@ import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 
-import { ROUTES } from '@/kernel/routes';
 import { sessionQueries } from '@/services/session';
+
+import { ROUTES } from '@/kernel/routes';
 
 import { toast } from '@/shared/ui';
 
@@ -33,8 +34,10 @@ export function useLoginForm() {
           await sendCode({ email: value.email });
           toast.success('Код отправлен на почту');
           setStep('code');
-        } catch {
-          toast.danger('Не удалось отправить код');
+        } catch (e) {
+          toast.danger('Не удалось отправить код', {
+            description: e instanceof Error ? e.message : undefined,
+          });
         }
 
         return;
