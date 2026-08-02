@@ -28,6 +28,20 @@ function toCustomFieldsDto(fields: CustomFieldFormValue[]): CustomFieldDto[] {
   }));
 }
 
+// обратное направление: CustomFieldDto[] (из RecognitionDraftDto) → форма.
+// value рантайм-типизирован как string/number/boolean (см. комментарий выше
+// про мистайпинг openapi-codegen) — String() корректно приводит любой из них
+// к строковому виду, который ждёт CustomFieldsField (включая 'true'/'false')
+export function fromCustomFieldsDto(
+  fields: CustomFieldDto[],
+): CustomFieldFormValue[] {
+  return fields.map(f => ({
+    key: f.key,
+    type: f.type,
+    value: String(f.value),
+  }));
+}
+
 // categoryId — отдельный аргумент, а не поле ItemFormValue: create шлёт `undefined`
 // при отсутствии, update — `null` (явный сброс), это решает вызывающий код
 export function toItemDto<C extends string | null | undefined>(

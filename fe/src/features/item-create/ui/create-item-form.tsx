@@ -1,8 +1,16 @@
+import { useRef } from 'react';
 import type { ReactNode } from 'react';
+
 import { useIsMutating, useQuery } from '@tanstack/react-query';
 
 import { categoryQueries } from '@/services/category';
-import { CustomFieldsField, ItemPhotosField, itemQueries } from '@/services/item';
+import {
+  CustomFieldsField,
+  ItemPhotosField,
+  itemQueries,
+  type ItemPhotosFieldHandle,
+} from '@/services/item';
+import { RecognitionPhotoField } from '@/services/recognition';
 
 import {
   Button,
@@ -14,6 +22,8 @@ import {
 } from '@/shared/ui';
 
 import { useCreateItemForm } from '../model/use-create-item-form';
+import { useRecognitionDraftMerge } from '../model/use-recognition-draft-merge';
+import { RecognitionDraftConfirmModal } from './recognition-draft-confirm-modal';
 
 interface Props {
   containerId: string;
@@ -31,6 +41,11 @@ export function CreateItemForm(props: Props) {
     mutationKey: itemQueries.uploadPhotoKey(),
   });
 
+  const photosFieldRef = useRef<ItemPhotosFieldHandle>(null);
+
+  const { conflicts, handleDraftReady, handleResolve } =
+    useRecognitionDraftMerge(form, categories);
+
   return (
     <form
       className='flex min-h-0 flex-1 flex-col'
@@ -41,6 +56,13 @@ export function CreateItemForm(props: Props) {
       }}
     >
       <Drawer.Body className='flex flex-col gap-4'>
+        <RecognitionPhotoField
+          onDraftReady={(draft, file) => {
+            photosFieldRef.current?.addFiles([file]);
+            handleDraftReady(draft);
+          }}
+        />
+
         <form.Field name='name'>
           {field => <FormTextField field={field} label='Название' />}
         </form.Field>
@@ -76,7 +98,13 @@ export function CreateItemForm(props: Props) {
         </form.Field>
 
         <form.Field name='photos'>
-          {field => <ItemPhotosField field={field} initialPhotos={[]} />}
+          {field => (
+            <ItemPhotosField
+              ref={photosFieldRef}
+              field={field}
+              initialPhotos={[]}
+            />
+          )}
         </form.Field>
 
         <form.Field name='customFields'>
@@ -101,6 +129,13 @@ export function CreateItemForm(props: Props) {
           )}
         </form.Subscribe>
       </Drawer.Footer>
+
+      {conflicts && (
+        <RecognitionDraftConfirmModal
+          conflicts={conflicts}
+          onConfirm={handleResolve}
+        />
+      )}
     </form>
   );
 }

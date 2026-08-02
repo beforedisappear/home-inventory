@@ -22,7 +22,9 @@ export function AdaptiveDrawer(props: Props) {
     <Drawer.Root state={state}>
       <Drawer.Backdrop>
         <Drawer.Content placement={isMobile ? 'left' : 'right'}>
-          <Drawer.Dialog className={dialogClassName}>
+          <Drawer.Dialog
+            className={isMobile ? 'w-full max-w-full' : dialogClassName}
+          >
             <Drawer.Header>
               <Drawer.Heading>{heading}</Drawer.Heading>
               <Drawer.CloseTrigger />
