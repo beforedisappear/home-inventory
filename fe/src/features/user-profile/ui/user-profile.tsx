@@ -15,7 +15,7 @@ export function UserProfile() {
   }
 
   return (
-    <div className='flex flex-col gap-2 w-full max-w-xl min-h-84 rounded-2xl border border-border bg-surface p-10 shadow-xl'>
+    <div className='flex flex-col gap-2 w-full max-w-xl min-h-84 rounded-2xl border border-border bg-surface p-4 shadow-xl sm:p-6 md:p-10'>
       <Typography.Heading level={3}>Профиль</Typography.Heading>
 
       <UserEmailField email={user?.email ?? ''} />

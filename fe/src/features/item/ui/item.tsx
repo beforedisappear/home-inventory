@@ -4,8 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
 
-import { ItemDeleteTrigger } from '@/features/item-delete';
-
 import { itemQueries } from '@/services/item';
 
 import type { components } from '@/kernel/api/schema';
@@ -19,13 +17,13 @@ type ItemResponseDto = components['schemas']['ItemResponseDto'];
 
 interface Props {
   id: string;
-  onDeleted?: (item: ItemResponseDto) => void;
   categorySlot?: ReactNode;
   headerActions?: ReactNode;
+  deleteSlot?: (item: ItemResponseDto) => ReactNode;
 }
 
 export function Item(props: Props) {
-  const { id, onDeleted, categorySlot, headerActions } = props;
+  const { id, categorySlot, headerActions, deleteSlot } = props;
 
   const {
     data: item,
@@ -75,17 +73,11 @@ export function Item(props: Props) {
 
         <div className='flex items-center gap-1'>
           {headerActions}
-
-          <ItemDeleteTrigger
-            itemId={item.id}
-            containerId={item.containerId}
-            itemName={item.name}
-            onDeleted={() => onDeleted?.(item)}
-          />
+          {deleteSlot?.(item)}
         </div>
       </div>
 
-      <div className='flex w-full flex-col gap-4 rounded-2xl border border-border bg-surface p-10 shadow-xl'>
+      <div className='flex w-full flex-col gap-4 rounded-2xl border border-border bg-surface p-4 shadow-xl sm:p-6 md:p-10'>
         <ItemEditForm
           item={item}
           containerId={item.containerId}
