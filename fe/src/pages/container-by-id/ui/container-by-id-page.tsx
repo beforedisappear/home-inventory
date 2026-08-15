@@ -13,6 +13,7 @@ import { CreateItem } from '@/features/item-create';
 import { ItemDeleteTrigger } from '@/features/item-delete';
 import { ItemList } from '@/features/item-list';
 import { QrButton, QrTrigger } from '@/features/qr';
+import { ReportsLink } from '@/features/report-generate';
 
 import { containerQueries } from '@/services/container';
 import { itemQueries } from '@/services/item';
@@ -48,6 +49,7 @@ export function ContainerByIdPage() {
                     generateMutationOptions={containerQueries.generateQr()}
                   />
                 )}
+                <ReportsLink containerId={container.id} />
                 <ContainerEdit
                   containerId={container.id}
                   parentId={container.parentId}

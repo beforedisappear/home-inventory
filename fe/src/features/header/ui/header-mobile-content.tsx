@@ -20,6 +20,11 @@ export function HeaderMobileContent(props: Props) {
       onAction: () => void navigate({ to: ROUTES.PROFILE }),
     },
     {
+      id: 'reports',
+      label: 'Мои отчёты',
+      onAction: () => void navigate({ to: ROUTES.REPORTS }),
+    },
+    {
       id: 'logout',
       label: 'Выйти',
       onAction: props.onLogout,

@@ -24,6 +24,12 @@ export function HeaderDesktopContent(props: Props) {
         )}
       </Link>
 
+      <Link to={ROUTES.REPORTS}>
+        <Typography type='body-sm' color='muted'>
+          Мои отчёты
+        </Typography>
+      </Link>
+
       <Button
         type='button'
         isDisabled={props.isLoggingOut}

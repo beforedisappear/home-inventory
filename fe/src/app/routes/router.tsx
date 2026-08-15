@@ -4,11 +4,13 @@ import {
   createRouter,
   redirect,
 } from '@tanstack/react-router';
+import { z } from 'zod';
 
 import { ContainerByIdPage } from '@/pages/container-by-id';
 import { HomePage } from '@/pages/home';
 import { ItemByIdPage } from '@/pages/item-by-id';
 import { LoginPage } from '@/pages/login';
+import { ReportsPage } from '@/pages/reports';
 import { UserProfilePage } from '@/pages/user-profile';
 
 import { ROUTES } from '@/kernel/routes';
@@ -50,6 +52,17 @@ const profileRoute = createRoute({
   component: UserProfilePage,
 });
 
+const reportsSearchSchema = z.object({
+  containerId: z.string().optional(),
+});
+
+const reportsRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: ROUTES.REPORTS,
+  component: ReportsPage,
+  validateSearch: reportsSearchSchema,
+});
+
 const containerByIdRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: ROUTES.CONTAINER_BY_ID,
@@ -65,6 +78,7 @@ const itemByIdRoute = createRoute({
 const protectedRoutes = protectedRoute.addChildren([
   indexRoute,
   profileRoute,
+  reportsRoute,
   containerByIdRoute,
   itemByIdRoute,
 ]);
