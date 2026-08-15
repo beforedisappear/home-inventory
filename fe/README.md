@@ -1,75 +1,126 @@
-# React + TypeScript + Vite
+# Home Inventory — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-клиент приложения домашней инвентаризации. Учёт вещей, контейнеров, документов и гарантий.
 
-Currently, two official plugins are available:
+## Стек
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Слой         | Технология                                                |
+| ------------ | ---------------------------------------------------------- |
+| UI           | React 19 + React Compiler                                  |
+| Сборка       | Vite 8 + TypeScript 6                                       |
+| Пакеты       | Bun                                                          |
+| Стили        | Tailwind CSS v4 + HeroUI v3                                  |
+| Серверный стейт | TanStack Query                                             |
+| Роутинг      | TanStack Router (code-based)                                |
+| Формы        | TanStack Form + zod                                          |
+| API-типы     | openapi-typescript (типы) + openapi-fetch (свой клиент)      |
+| Drag & Drop  | @dnd-kit                                                     |
 
-## React Compiler
+### Структура
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```
+src/
+├── app/          # точка входа, провайдеры, роутер, layout, глобальные стили
+├── pages/        # композиция фич в экраны
+├── features/     # самостоятельные функциональные блоки
+├── services/     # переиспользуемые бизнес-модули (данные + иногда UI)
+├── kernel/       # связующая логика: роуты, API-типы, сборка сессии
+└── shared/       # ui-kit, утилиты, конфиг — используется всеми слоями
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Слои упорядочены по стабильности (`app → pages → features → services → kernel → shared`):
+нижние слои никогда не импортируют верхние.
 
-```js
-// eslint.config.js
-import reactDom from 'eslint-plugin-react-dom';
-import reactX from 'eslint-plugin-react-x';
+### Запуск
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+cp .env.example .env
+bun install
+bun dev
 ```
+
+Бэкенд должен быть поднят отдельно (`VITE_API_URL`, по умолчанию `http://localhost:3000`).
+После изменений в бэкендовом API синхронизировать типы:
+
+```bash
+bun run api:sync   # тянет openapi.json с бэка и генерирует src/kernel/api/schema.ts
+```
+
+---
+
+## Функциональные требования
+
+### Аутентификация
+
+- Вход по email: код подтверждения на почту, ввод кода
+- Access/refresh токены, single-flight обновление access-токена по 401 с ретраем запроса
+- Хранение токенов за портом `TokenStorage` (сейчас — localStorage-адаптер)
+- Guard защищённых роутов, редирект на `/login` при невалидной сессии
+
+---
+
+### Профиль пользователя
+
+- Просмотр и редактирование имени
+- Смена email с подтверждением кодом
+
+---
+
+### Контейнеры
+
+- CRUD, иерархическая структура (комната → шкаф → ящик → коробка → сумка)
+- Создание с учётом правил вложения родителя, инлайновое создание кастомного правила
+- Удаление — как самого контейнера (из его страницы), так и по кнопке в списке дочерних
+
+---
+
+### Категории
+
+- Плоский список категорий для вещей, инлайн-менеджер (создание/выбор) в форме вещи
+
+---
+
+### Вещи (Item)
+
+- CRUD, отдельная страница вещи
+- Привязка к контейнеру и категории
+- Фото: загрузка, drag-and-drop сортировка, полноэкранный просмотр (lightbox)
+- Произвольные пользовательские поля (custom fields): типизированные пары ключ/значение
+- Распознавание по фото (AI): кадр с камеры → черновик формы (название, описание, категория, custom fields), которым можно заполнить создаваемую вещь; статус приходит по SSE
+
+---
+
+### QR-коды
+
+- Генерация и просмотр QR-кода для вещи и для контейнера
+- Отображение статуса генерации, скачивание
+
+---
+
+### Документы
+
+- Прикрепление файлов к вещи (чек, гарантия, инструкция, другое)
+- Дата окончания гарантии, список документов вещи
+
+---
+
+### Отчёты по контейнеру
+
+- Запуск формирования PDF-отчёта прямо со страницы контейнера
+- Отдельная страница `/reports`: список отчётов (по всем контейнерам или отфильтрованный по одному), статус обновляется по SSE, скачивание готового PDF, удаление
+- Ограничение бэкенда — один активный отчёт на пользователя — отражается тостом, а не тихой ошибкой
+
+---
+
+### Реалтайм (SSE)
+
+- Общая фабрика SSE-соединения (`shared/lib/sse`) для событий распознавания и отчётов
+- Один физический коннект на все вкладки браузера (Web Locks API + BroadcastChannel), не N коннектов на N вкладок
+
+---
+
+### UI / кроссплатформенность
+
+- Светлая/тёмная тема (переключатель, `resolvedTheme` от HeroUI)
+- Раздельная desktop/mobile раскладка навигации (`useDeviceType`, media-query breakpoints)
+- Общий ui-kit поверх HeroUI: единая точка импорта (`shared/ui`), формы, empty/error-состояния, модалки/drawer с адаптацией под mobile
